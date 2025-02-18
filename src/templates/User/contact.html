@@ -86,14 +86,11 @@
                 </svg>
             </button>
 
-            <!-- Full Sidebar Content -->
             <div id="sidebar-content">
-                <!-- Logo Area -->
                 <div class="h-16 flex items-center px-6 border-b border-gray-800">
                     <h1 class="text-xl font-bold">BlockTix</h1>
                 </div>
                 
-                <!-- Navigation Menu -->
                 <nav class="px-4 pt-4">
                     <a href="{{ url_for('user.dashboard') }}" 
                        class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg mb-2 {% if request.endpoint == 'user.dashboard' %}bg-gray-800{% endif %}">
@@ -128,7 +125,6 @@
                     </a>
                 </nav>
                 
-                <!-- User Profile Section -->
                 <div class="absolute bottom-0 w-full border-t border-gray-800">
                     <div class="px-6 py-4">
                         <div class="flex items-center">
@@ -148,7 +144,6 @@
                 </div>
             </div>
 
-            <!-- Mini Icons -->
             <div id="mini-icons" class="hidden pt-4">
                 <div class="flex flex-col items-center space-y-4">
                     <a href="{{ url_for('user.dashboard') }}" class="p-2 hover:bg-gray-800 rounded-lg tooltip" title="Dashboard">
@@ -205,7 +200,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Step 2 -->
+
                         <div class="step hidden" id="step2">
                             <div class="bg-primary rounded-lg p-8 shadow-lg">
                                 <div class="flex justify-between items-center mb-6">
@@ -259,7 +254,6 @@
                             </div>
                         </div>
 
-                        <!-- Step 3 -->
                         <div class="step hidden" id="step3">
                             <div class="bg-primary rounded-lg p-8 shadow-lg">
                                 <div class="flex justify-between items-center mb-6">
@@ -279,16 +273,6 @@
                                                 class="contact-option bg-white p-4 rounded-xl text-center hover:shadow-lg">
                                             <span class="text-2xl">📱</span>
                                             <span class="block text-gray-700 font-medium mt-2">Phone</span>
-                                        </button>
-                                        <button onclick="selectBudget('live-chat',this)" 
-                                                class="contact-option bg-white p-4 rounded-xl text-center hover:shadow-lg">
-                                            <span class="text-2xl">💬</span>
-                                            <span class="block text-gray-700 font-medium mt-2">Live Chat</span>
-                                        </button>
-                                        <button onclick="selectBudget('video-call',this)" 
-                                                class="contact-option bg-white p-4 rounded-xl text-center hover:shadow-lg">
-                                            <span class="text-2xl">🎥</span>
-                                            <span class="block text-gray-700 font-medium mt-2">Video Call</span>
                                         </button>
                                         <button onclick="selectBudget('in-person',this)" 
                                                 class="contact-option bg-white p-4 rounded-xl text-center col-span-2 hover:shadow-lg">
@@ -313,7 +297,6 @@
                             </div>
                         </div>
 
-                        <!-- Step 4 (unchanged) -->
                         <div class="step hidden" id="step4">
                             <div class="bg-primary rounded-lg p-8 shadow-lg">
                                 <div class="flex justify-between items-center mb-6">

@@ -1,12 +1,5 @@
 # BlockTix - Blockchain-Powered Event Ticketing Platform
 
-### Team Members
-
-- Jasper
-- Ethan
-- Cai Feng
-- Sherwin
-
 ## About BlockTix
 
 BlockTix is a next-generation event ticketing platform built on blockchain technology. Our platform combines the security and transparency of blockchain with a user-friendly interface to revolutionize how event tickets are bought, sold, and verified.

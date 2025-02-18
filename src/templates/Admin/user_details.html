@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockTix - User Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar with collapse functionality -->
+        <div id="sidebar" class="w-64 bg-blue-800 text-white h-screen flex flex-col justify-between transition-all duration-300 overflow-hidden">
+            <div>
+                <div class="p-4 flex justify-between items-center">
+                    <h1 class="text-2xl font-bold sidebar-text">BlockTix Admin</h1>
+                    <button id="sidebarCollapseBtn" class="text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                </div>
+                <nav class="mt-8">
+                    <a href="{{ url_for('admin.dashboard') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" class="flex items-center px-6 py-3 bg-indigo-700 text-white group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Users</span>
+                    </a>
+                    <a href="{{ url_for('admin.events') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Events</span>
+                    </a>
+                    <a href="{{ url_for('admin.promotions') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Promotions</span>
+                    </a>
+
+                </nav>
+            </div>
+            
+            <div class="mb-8 px-4">
+                <a href="{{ url_for('admin.logout') }}" class="flex items-center px-6 py-3 text-white bg-red-700 hover:bg-red-800 rounded-lg transition-colors duration-200 justify-center">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span class="sidebar-text whitespace-nowrap">Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top bar with mobile menu button -->
+            <div class="bg-white shadow-sm py-3 px-6 flex justify-between items-center">
+                <button id="mobileMenuBtn" class="block lg:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div class="text-lg font-semibold lg:hidden">BlockTix Admin</div>
+                
+                <div class="flex items-center">
+                    <span class="mr-2 text-sm text-gray-600">{{ session.get('admin_name', 'Admin') }}</span>
+                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                        {{ session.get('admin_name', 'A')[0] }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Details Content -->
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center">
+                        <a href="{{ url_for('admin.users') }}" class="mr-4 text-blue-600 hover:text-blue-800">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                        </a>
+                        <h1 class="text-2xl font-bold text-gray-800">User Details</h1>
+                    </div>
+                    <div class="flex space-x-2">
+                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Edit User
+                        </a>
+                        <button onclick="confirmDeleteUser({{ user.id }})" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                            Delete User
+                        </button>
+                    </div>
+                </div>
+
+                <!-- User Info Card -->
+                <div class="bg-white rounded-lg shadow mb-8">
+                    <div class="p-6 border-b">
+                        <h2 class="text-xl font-semibold">User Information</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <div class="flex items-center mb-4">
+                                    <div class="h-16 w-16 rounded-full bg-blue-200 flex items-center justify-center text-blue-800 text-2xl font-bold">
+                                        {{ user.fullname[0] }}
+                                    </div>
+                                    <div class="ml-6">
+                                        <h3 class="text-xl font-semibold">{{ user.fullname }}</h3>
+                                        <p class="text-gray-600">{{ user.email }}</p>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mt-6">
+                                    <div>
+                                        <p class="text-sm text-gray-500">Verification Status</p>
+                                        <p class="font-medium flex items-center">
+                                            {% if user.is_verified %}
+                                                <span class="h-2 w-2 bg-green-500 rounded-full mr-2"></span> Verified
+                                            {% else %}
+                                                <span class="h-2 w-2 bg-yellow-500 rounded-full mr-2"></span> Unverified
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">User ID</p>
+                                        <p class="font-medium">{{ user.id }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="mb-4">
+                                    <h4 class="text-sm text-gray-500">Ethereum Wallet</h4>
+                                    {% if user.eth_address %}
+                                        <p class="font-mono break-all">{{ user.eth_address }}</p>
+                                    {% else %}
+                                        <p class="text-gray-500 italic">No wallet connected</p>
+                                    {% endif %}
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 mt-6">
+                                    <div class="bg-blue-50 p-4 rounded-lg text-center">
+                                        <p class="text-2xl font-bold text-blue-600">{{ total_tickets }}</p>
+                                        <p class="text-xs text-gray-600">Total Tickets</p>
+                                    </div>
+                                    <div class="bg-green-50 p-4 rounded-lg text-center">
+                                        <p class="text-2xl font-bold text-green-600">{{ active_tickets }}</p>
+                                        <p class="text-xs text-gray-600">Active Tickets</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                                        <p class="text-2xl font-bold text-gray-600">{{ used_tickets }}</p>
+                                        <p class="text-xs text-gray-600">Used Tickets</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Tickets Table -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="p-6 border-b flex justify-between items-center">
+                        <h2 class="text-xl font-semibold">User Tickets</h2>
+                        <a href="{{ url_for('admin.user_tickets', user_id=user.id) }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                            View All Tickets
+                        </a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purchase Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for ticket in tickets[:5] %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ ticket.ticket_id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ticket.event.event_name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ ticket.purchase_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${{ "%.2f"|format(ticket.amount_paid) }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs rounded-full
+                                            {% if ticket.status == 'active' %}
+                                                bg-green-100 text-green-800
+                                            {% elif ticket.status == 'used' %}
+                                                bg-gray-100 text-gray-800
+                                            {% else %}
+                                                bg-red-100 text-red-800
+                                            {% endif %}">
+                                            {{ ticket.status }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <a href="{{ url_for('admin.view_ticket', ticket_id=ticket.id) }}" class="text-blue-600 hover:text-blue-900 mr-2">
+                                            <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% if tickets|length == 0 %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center" colspan="6">
+                                        No tickets found for this user
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        {% if tickets|length > 5 %}
+                        <div class="px-6 py-4 border-t">
+                            <p class="text-sm text-gray-700">
+                                Showing 5 of {{ tickets|length }} tickets
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User deletion confirmation
+        function confirmDeleteUser(userId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will delete the user and all their associated tickets. This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete user'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit form to delete user
+                    fetch(`/admin/users/${userId}/delete`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Deleted!',
+                                'User has been deleted successfully.',
+                                'success'
+                            ).then(() => {
+                                window.location.href = "{{ url_for('admin.users') }}";
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                data.message || 'There was an error deleting the user.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire(
+                            'Error!',
+                            'There was an error processing your request.',
+                            'error'
+                        );
+                    });
+                }
+            });
+        }
+
+        // Sidebar functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            
+            // For desktop view - toggle sidebar width
+            sidebarCollapseBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('w-64');
+                sidebar.classList.toggle('w-16');
+                
+                // Toggle visibility of text elements
+                sidebarTexts.forEach(text => {
+                    text.classList.toggle('hidden');
+                });
+                
+                // Rotate the collapse button when sidebar is collapsed
+                this.querySelector('svg').classList.toggle('rotate-180');
+            });
+            
+            // For mobile view
+            mobileMenuBtn.addEventListener('click', function() {
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                }
+            });
+            
+            // If mobile, hide sidebar by default
+            function handleResize() {
+                if (window.innerWidth < 1024) { // lg breakpoint
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0', 'w-16');
+                    sidebar.classList.add('w-64');
+                    sidebarTexts.forEach(text => {
+                        text.classList.remove('hidden');
+                    });
+                    sidebarCollapseBtn.querySelector('svg').classList.remove('rotate-180');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                }
+            }
+            
+            // Initial setup
+            handleResize();
+            
+            // Handle window resize
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>

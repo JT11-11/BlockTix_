@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockTix - Promotions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tooltip {
+            position: relative;
+        }
+        .tooltip:hover::after {
+            content: attr(title);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #374151;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+            white-space: nowrap;
+            z-index: 50;
+            font-size: 12px;
+        }
+    </style>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const sidebarContent = document.getElementById('sidebar-content');
+            const miniIcons = document.getElementById('mini-icons');
+            
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-16');
+            mainContent.classList.toggle('ml-64');
+            mainContent.classList.toggle('ml-16');
+            sidebarContent.classList.toggle('hidden');
+            miniIcons.classList.toggle('hidden');
+            
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('w-16'));
+        }
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
+                toggleSidebar();
+            }
+        });
+    </script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed h-full bg-gray-900 text-white transition-all duration-300 w-64 z-20">
+            <!-- Toggle Button -->
+            <button onclick="toggleSidebar()" 
+                    class="absolute -right-3 top-4 bg-gray-900 text-white p-1 rounded-full hover:bg-gray-700 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+
+            <!-- Full Sidebar Content -->
+            <div id="sidebar-content">
+                <!-- Logo Area -->
+                <div class="h-16 flex items-center px-6 border-b border-gray-800">
+                    <h1 class="text-xl font-bold">BlockTix</h1>
+                </div>
+                
+                <!-- Navigation Menu -->
+                <nav class="px-4 pt-4">
+                    <a href="{{ url_for('user.dashboard') }}" 
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg mb-2 {% if request.endpoint == 'user.dashboard' %}bg-gray-800{% endif %}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <span class="transition-opacity duration-300">Home</span>
+                    </a>
+                    
+                    <a href="{{ url_for('user.events') }}" 
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg mb-2 {% if request.endpoint == 'user.events' %}bg-gray-800{% endif %}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="transition-opacity duration-300">Events</span>
+                    </a>
+                    
+                    <a href="{{ url_for('user.promotions') }}" 
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg mb-2 {% if request.endpoint == 'user.promotions' %}bg-gray-800{% endif %}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                        <span class="transition-opacity duration-300">Promotions</span>
+                    </a>
+                    
+                    <a href="{{ url_for('user.contact') }}" 
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg {% if request.endpoint == 'user.contact' %}bg-gray-800{% endif %}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="transition-opacity duration-300">Contact Us</span>
+                    </a>
+                </nav>
+                
+                <!-- User Profile Section -->
+                <div class="absolute bottom-0 w-full border-t border-gray-800">
+                    <div class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white font-bold">
+                                {{ session['user_fullname'][0] if session['user_fullname'] else 'U' }}
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-white">{{ session['user_fullname'] }}</p>
+                                <p class="text-xs text-gray-400">{{ session['user_email'] }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('user.logout') }}" 
+                        class="mt-4 block text-center py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-150">
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mini Icons -->
+            <div id="mini-icons" class="hidden pt-4">
+                <div class="flex flex-col items-center space-y-4">
+                    <a href="{{ url_for('user.dashboard') }}" class="p-2 hover:bg-gray-800 rounded-lg tooltip" title="Dashboard">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                    </a>
+                    <a href="{{ url_for('user.events') }}" class="p-2 hover:bg-gray-800 rounded-lg tooltip" title="Events">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </a>
+                    <a href="{{ url_for('user.promotions') }}" class="p-2 hover:bg-gray-800 rounded-lg tooltip" title="Promotions">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                    </a>
+                    <div class="absolute bottom-4 w-full flex justify-center">
+                        <a href="{{ url_for('user.logout') }}" class="p-2 hover:bg-red-600 rounded-lg tooltip" title="Logout">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div id="main-content" class="flex-1 ml-64 transition-all duration-300">
+            <!-- Top Bar -->
+            <div class="h-16 bg-white border-b flex items-center justify-between px-6 sticky top-0 z-10">
+                <h2 class="text-xl font-semibold">Promotions</h2>
+            </div>
+
+            <!-- Promotions Content -->
+            <div class="p-6">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800">Available Promotions</h1>
+                    <p class="text-gray-600 mt-2">Check out our latest offers and deals</p>
+                </div>
+
+                <!-- Active Promotions -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold mb-4">Active Promotions</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% if promotions.active %}
+                            {% for promo in promotions.active %}
+                            <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-[1.02] transition-transform">
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-blue-600">{{ promo.title }}</h3>
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                                            Active
+                                        </span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">{{ promo.description }}</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-500">
+                                            Valid until: {{ promo.valid_until.strftime('%B %d, %Y') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-span-3 text-center py-8 text-gray-500">
+                                <p>No active promotions at the moment.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Past Promotions -->
+                <div>
+                    <h2 class="text-xl font-semibold mb-4">Past Promotions</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% if promotions.expired %}
+                            {% for promo in promotions.expired %}
+                            <div class="bg-gray-50 rounded-lg shadow overflow-hidden opacity-75">
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-600">{{ promo.title }}</h3>
+                                        <span class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-sm font-medium">
+                                            Expired
+                                        </span>
+                                    </div>
+                                    <p class="text-gray-500 mb-4">{{ promo.description }}</p>
+                                    <div class="text-sm text-gray-400">
+                                        Ended: {{ promo.valid_until.strftime('%B %d, %Y') }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-span-3 text-center py-8 text-gray-500">
+                                <p>No expired promotions.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

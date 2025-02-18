@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full">
+            <!-- Logo -->
+            <div class="flex justify-center mb-8">
+                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Title and Subtitle -->
+            <h2 class="text-2xl font-bold text-center text-gray-900 mb-2">Enter verification code</h2>
+            <p class="text-center text-gray-600 mb-8">
+                We've sent a code to <span class="font-medium">your provided email</span>
+            </p>
+
+            <!-- Code Input -->
+            <form id="verificationForm" class="space-y-6">
+                <div class="flex justify-between max-w-sm mx-auto gap-2">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric"
+                        class="w-12 h-12 text-center text-2xl font-semibold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+                        required>
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric"
+                        class="w-12 h-12 text-center text-2xl font-semibold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+                        required>
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric"
+                        class="w-12 h-12 text-center text-2xl font-semibold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+                        required>
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric"
+                        class="w-12 h-12 text-center text-2xl font-semibold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+                        required>
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric"
+                        class="w-12 h-12 text-center text-2xl font-semibold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+                        required>
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric"
+                        class="w-12 h-12 text-center text-2xl font-semibold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+                        required>
+                </div>
+
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden">
+                    <p class="text-red-500 text-sm text-center">Invalid verification code. Please try again.</p>
+                </div>
+
+                <!-- Resend Code -->
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">
+                        Didn't get a code? 
+                        <button type="button" class="text-blue-600 hover:text-blue-800 font-medium focus:outline-none">
+                            Click to resend
+                        </button>
+                    </p>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" 
+                    class="w-full bg-blue-600 text-white rounded-lg py-3 font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                    Verify
+                </button>
+
+                <!-- Cancel Button -->
+                <button type="button" 
+                    class="w-full text-gray-600 font-medium hover:text-gray-800 focus:outline-none">
+                    Cancel
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Get all input elements
+        const inputs = document.querySelectorAll('input[type="text"]');
+        
+        // Add input handling
+        inputs.forEach((input, index) => {
+            // Auto-focus first input
+            if (index === 0) input.focus();
+
+            input.addEventListener('input', function() {
+                if (this.value.length === 1) {
+                    // Move to next input if available
+                    if (inputs[index + 1]) {
+                        inputs[index + 1].focus();
+                    }
+                }
+            });
+
+            // Handle backspace
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && !this.value) {
+                    // Move to previous input if available
+                    if (inputs[index - 1]) {
+                        inputs[index - 1].focus();
+                    }
+                }
+            });
+
+            // Only allow numbers
+            input.addEventListener('keypress', function(e) {
+                if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        document.getElementById('verificationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const inputs = document.querySelectorAll('input[type="text"]');
+            const code = Array.from(inputs).map(input => input.value).join('');
+            const formData = new FormData();
+            
+            // Add each digit to form data
+            inputs.forEach((input, index) => {
+                formData.append('code[]', input.value);
+            });
+
+            try {
+                const response = await fetch('/user/mfa', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.location.href = data.redirect;
+                } else {
+                    document.getElementById('errorMessage').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                document.getElementById('errorMessage').classList.remove('hidden');
+            }
+        });
+
+        // Add resend code functionality
+        document.querySelector('button[type="button"]').addEventListener('click', async function() {
+            try {
+                const response = await fetch('/user/resend_code', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    alert('New code sent successfully');
+                }
+            } catch (error) {
+                console.error('Error resending code:', error);
+            }
+        });
+    </script>
+</body>
+</html>

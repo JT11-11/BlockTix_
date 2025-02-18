@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockTix - {{ 'Edit' if promotion else 'Create' }} Promotion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        
+        <div class="flex-1 overflow-auto">
+            <div class="bg-white shadow-sm py-3 px-6 flex justify-between items-center">
+                <button id="mobileMenuBtn" class="block lg:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div class="text-lg font-semibold lg:hidden">{{ 'Edit' if promotion else 'Create' }} Promotion</div>
+                
+                <div class="flex space-x-2">
+                    <a href="{{ url_for('admin.promotions') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Back to Promotions
+                    </a>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <div class="max-w-3xl mx-auto">
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <form action="{{ url_for('admin.edit_promotion', promotion_id=promotion.id) if promotion else url_for('admin.create_promotion') }}" 
+                              method="post" 
+                              enctype="multipart/form-data"
+                              class="space-y-6 p-6">
+                            
+                            <!-- Title -->
+                            <div>
+                                <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                                <input type="text" 
+                                       id="title" 
+                                       name="title" 
+                                       value="{{ promotion.title if promotion else '' }}"
+                                       required
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                                <textarea id="description" 
+                                          name="description" 
+                                          rows="4"
+                                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ promotion.description if promotion else '' }}</textarea>
+                            </div>
+
+                            <!-- Valid Until Date/Time -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="valid_until_date" class="block text-sm font-medium text-gray-700">Valid Until Date</label>
+                                    <input type="date" 
+                                           id="valid_until_date" 
+                                           name="valid_until_date" 
+                                           value="{{ promotion.valid_until.strftime('%Y-%m-%d') if promotion else '' }}"
+                                           required
+                                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label for="valid_until_time" class="block text-sm font-medium text-gray-700">Valid Until Time</label>
+                                    <input type="time" 
+                                           id="valid_until_time" 
+                                           name="valid_until_time" 
+                                           value="{{ promotion.valid_until.strftime('%H:%M') if promotion else '' }}"
+                                           required
+                                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                </div>
+                            </div>
+
+                            <!-- Status (only for editing) -->
+                            {% if promotion %}
+                            <div>
+                                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                                <select id="status" 
+                                        name="status" 
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="active" {{ 'selected' if promotion.status == 'active' else '' }}>Active</option>
+                                    <option value="expired" {{ 'selected' if promotion.status == 'expired' else '' }}>Expired</option>
+                                </select>
+                            </div>
+                            {% endif %}
+
+                            <!-- Image Upload -->
+                            <div>
+                                <label for="image" class="block text-sm font-medium text-gray-700">Promotion Image</label>
+                                {% if promotion and promotion.image_url %}
+                                <div class="mt-2 flex items-center space-x-6">
+                                    <img src="{{ promotion.image_url }}" 
+                                         alt="{{ promotion.title }}" 
+                                         class="h-32 w-auto object-cover rounded">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" 
+                                               id="remove_image" 
+                                               name="remove_image" 
+                                               class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
+                                        <label for="remove_image" class="ml-2 block text-sm text-red-600">
+                                            Remove current image
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <input type="file" 
+                                       id="image" 
+                                       name="image" 
+                                       accept="image/*"
+                                       class="mt-1 block w-full">
+                                <p class="mt-1 text-sm text-gray-500">
+                                    Upload a new image (PNG, JPG, GIF up to 2MB)
+                                </p>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="flex justify-end space-x-3">
+                                <a href="{{ url_for('admin.promotions') }}" 
+                                   class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Cancel
+                                </a>
+                                <button type="submit" 
+                                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2
+                                        focus:ring-offset-2 focus:ring-indigo-500">
+                                    {{ 'Update' if promotion else 'Create' }} Promotion
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const removeImageCheckbox = document.getElementById('remove_image');
+            const imageInput = document.getElementById('image');
+            
+            if (removeImageCheckbox && imageInput) {
+                imageInput.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        removeImageCheckbox.checked = false;
+                        removeImageCheckbox.disabled = true;
+                    } else {
+                        removeImageCheckbox.disabled = false;
+                    }
+                });
+                
+                removeImageCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        imageInput.value = '';
+                        imageInput.disabled = true;
+                    } else {
+                        imageInput.disabled = false;
+                    }
+                });
+            }
+        });
+
+        document.querySelector('form').addEventListener('submit', function(event) {
+            let hasError = false;
+            const title = document.getElementById('title').value.trim();
+            const validUntilDate = document.getElementById('valid_until_date').value;
+            const validUntilTime = document.getElementById('valid_until_time').value;
+            
+            if (!title) {
+                alert('Please enter a title for the promotion');
+                hasError = true;
+            }
+            
+            if (validUntilDate && validUntilTime) {
+                const validUntil = new Date(validUntilDate + 'T' + validUntilTime);
+                const now = new Date();
+                
+                if (validUntil < now) {
+                    alert('Valid until date must be in the future');
+                    hasError = true;
+                }
+            }
+            
+            if (hasError) {
+                event.preventDefault();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            
+            sidebarCollapseBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('w-64');
+                sidebar.classList.toggle('w-16');
+                sidebarTexts.forEach(text => {
+                    text.classList.toggle('hidden');
+                });
+                
+                this.querySelector('svg').classList.toggle('rotate-180');
+            });
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                }
+            });
+            
+            // If mobile, hide sidebar by default
+            function handleResize() {
+                if (window.innerWidth < 1024) { // lg breakpoint
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0', 'w-16');
+                    sidebar.classList.add('w-64');
+                    sidebarTexts.forEach(text => {
+                        text.classList.remove('hidden');
+                    });
+                    sidebarCollapseBtn.querySelector('svg').classList.remove('rotate-180');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                }
+            }
+            
+            handleResize();
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockTix - Edit User</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar with collapse functionality - Same as in other templates -->
+        <div id="sidebar" class="w-64 bg-blue-800 text-white h-screen flex flex-col justify-between transition-all duration-300 overflow-hidden">
+            <div>
+                <div class="p-4 flex justify-between items-center">
+                    <h1 class="text-2xl font-bold sidebar-text">BlockTix Admin</h1>
+                    <button id="sidebarCollapseBtn" class="text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                </div>
+                <nav class="mt-8">
+                    <!-- Navigation items same as in other templates -->
+                    <a href="{{ url_for('admin.dashboard') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" class="flex items-center px-6 py-3 bg-indigo-700 text-white group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Users</span>
+                    </a>
+                    <a href="{{ url_for('admin.events') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Events</span>
+                    </a>
+                    <a href="{{ url_for('admin.promotions') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Promotions</span>
+                    </a>
+
+                </nav>
+            </div>
+            
+            <!-- Logout button at the bottom -->
+            <div class="mb-8 px-4">
+                <a href="{{ url_for('admin.logout') }}" class="flex items-center px-6 py-3 text-white bg-red-700 hover:bg-red-800 rounded-lg transition-colors duration-200 justify-center">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span class="sidebar-text whitespace-nowrap">Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top bar with mobile menu button -->
+            <div class="bg-white shadow-sm py-3 px-6 flex justify-between items-center">
+                <button id="mobileMenuBtn" class="block lg:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div class="text-lg font-semibold lg:hidden">BlockTix Admin</div>
+                
+                <div class="flex items-center">
+                    <span class="mr-2 text-sm text-gray-600">{{ session.get('admin_name', 'Admin') }}</span>
+                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                        {{ session.get('admin_name', 'A')[0] }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit User Content -->
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center">
+                        <a href="{{ url_for('admin.users') }}" class="mr-4 text-blue-600 hover:text-blue-800">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                        </a>
+                        <h1 class="text-2xl font-bold text-gray-800">Edit User</h1>
+                    </div>
+                </div>
+
+                <!-- Edit User Form -->
+                <div class="bg-white rounded-lg shadow mb-8">
+                    <div class="p-6 border-b">
+                        <h2 class="text-xl font-semibold">Edit User Information</h2>
+                    </div>
+                    <div class="p-6">
+                        <form action="{{ url_for('admin.edit_user', user_id=user.id) }}" method="POST">
+                            <input type="hidden">
+                            
+                            <!-- User Information Section -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-medium mb-4">Basic Information</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="fullname" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                        <input type="text" name="fullname" id="fullname" value="{{ user.fullname }}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                    </div>
+                                    <div>
+                                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                        <input type="email" name="email" id="email" value="{{ user.email }}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Account Settings Section -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-medium mb-4">Account Settings</h3>
+                                <div class="flex items-center">
+                                    <input type="checkbox" name="is_verified" id="is_verified" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" {% if user.is_verified %}checked{% endif %}>
+                                    <label for="is_verified" class="ml-2 block text-sm text-gray-700">
+                                        Verified Account
+                                    </label>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    Verified users have provided proper identification and have full access to all platform features.
+                                </p>
+                            </div>
+                            
+                            <!-- Wallet Information (Read-only) -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-medium mb-4">Blockchain Information</h3>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Ethereum Wallet Address</label>
+                                    <div class="flex items-center">
+                                        <input type="text" value="{{ user.eth_address or 'No wallet connected' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50" readonly>
+                                        <div class="ml-2 text-sm text-gray-500 italic">Read-only</div>
+                                    </div>
+                                    <p class="mt-1 text-sm text-gray-500">
+                                        For security reasons, blockchain wallet information cannot be edited directly.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Form Actions -->
+                            <div class="flex justify-end space-x-3 pt-5 border-t">
+                                <a href="{{ url_for('admin.view_user', user_id=user.id) }}" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Cancel
+                                </a>
+                                <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Reset Password Section -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6 border-b">
+                        <h2 class="text-xl font-semibold">Reset User Password</h2>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 mb-4">
+                            Resetting the password will generate a new temporary password and send it to the user's email address.
+                        </p>
+                        <button id="resetPasswordBtn" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                            Reset Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Reset password functionality
+        document.getElementById('resetPasswordBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "A new temporary password will be sent to the user's email. Continue?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, reset password'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/users/{{ user.id }}/reset-password`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Password Reset',
+                                'A temporary password has been sent to the user\'s email.',
+                                'success'
+                            );
+                        } else {
+                            Swal.fire(
+                                'Error',
+                                data.message || 'There was an error resetting the password.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire(
+                            'Error',
+                            'There was an error processing your request.',
+                            'error'
+                        );
+                    });
+                }
+            });
+        });
+    
+        // Form submission with loading and success notifications
+        // Form submission with loading and success notifications
+// Form submission with loading and success notifications
+document.addEventListener('DOMContentLoaded', function() {
+    const userForm = document.querySelector('form[action*="edit_user"]');
+    
+    // Check for success message in localStorage
+    if (localStorage.getItem('userEditSuccess')) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Changes Saved!',
+            text: 'User information has been updated successfully.',
+            confirmButtonText: 'Done'
+        });
+        // Remove the flag so it doesn't show again on next page load
+        localStorage.removeItem('userEditSuccess');
+    }
+    
+    if (userForm) {
+        userForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading overlay
+            flash("Please wait a minute while we save your changes...")
+            
+            // Submit the form
+            fetch(userForm.action, {
+                method: 'POST',
+                body: new FormData(userForm),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Set success flag in localStorage before reload
+                    flash("Changes made successfully")
+                    // Reload the page
+                    window.location.reload();
+                } else {
+                    flash("Error")
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'There was an error processing your request.',
+                    confirmButtonText: 'Try Again'
+                });
+            });
+        });
+    }
+});
+    
+        // Sidebar functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            
+            // For desktop view - toggle sidebar width
+            sidebarCollapseBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('w-64');
+                sidebar.classList.toggle('w-16');
+                
+                // Toggle visibility of text elements
+                sidebarTexts.forEach(text => {
+                    text.classList.toggle('hidden');
+                });
+                
+                // Rotate the collapse button when sidebar is collapsed
+                this.querySelector('svg').classList.toggle('rotate-180');
+            });
+            
+            // For mobile view
+            mobileMenuBtn.addEventListener('click', function() {
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                }
+            });
+            
+            // If mobile, hide sidebar by default
+            function handleResize() {
+                if (window.innerWidth < 1024) { // lg breakpoint
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0', 'w-16');
+                    sidebar.classList.add('w-64');
+                    sidebarTexts.forEach(text => {
+                        text.classList.remove('hidden');
+                    });
+                    sidebarCollapseBtn.querySelector('svg').classList.remove('rotate-180');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                }
+            }
+            
+            // Initial setup
+            handleResize();
+            
+            // Handle window resize
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>

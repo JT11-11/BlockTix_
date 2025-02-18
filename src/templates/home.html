@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockTix - Blockchain Ticketing Revolution</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script>
+        module.exports = {
+  theme: {
+    extend: {
+      keyframes: {
+        'fade-in-down': {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(-10px)'
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)'
+          },
+        },
+        'fade-in': {
+          '0%': {
+            opacity: '0'
+          },
+          '100%': {
+            opacity: '1'
+          },
+        }
+      },
+      animation: {
+        'fade-in-down': 'fade-in-down 0.5s ease-out',
+        'fade-in': 'fade-in 0.5s ease-out'
+      }
+    },
+  },
+  variants: {
+    extend: {
+      scale: ['group-hover'],
+      backgroundOpacity: ['group-hover']
+    }
+  }
+}
+</script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <h1 class="text-3xl font-bold">
+                            <span class="text-blue-600">Block</span><span class="text-orange-500">Tix</span>
+                        </h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                <a href="{{ url_for('user.signup') }}">
+                    <button class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition duration-150 text-sm font-semibold">Sign Up</button>
+                </a>
+                <a href="{{url_for('user.login')}}">
+                    <button class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition duration-150 text-sm font-semibold">Login</button>
+                </a>
+                <a href="{{url_for('admin.login')}}">
+                    <button class="bg-orange-500 text-white px-6 py-2.5 rounded-lg hover:bg-orange-600 transition duration-150 text-sm font-semibold">Admin</button>
+                </a>
+                </div>
+                
+            </div>
+        </div>
+    </nav>
+
+   <!-- Hero Section -->
+   <div class="relative bg-white overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+        <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <!-- Text Content -->
+                <div class="px-4 sm:px-6 lg:px-8 pt-10 lg:pt-28" data-aos="fade-right" data-aos-duration="1000">
+                    <h1 class="text-left text-6xl font-extrabold tracking-tight">
+                        <span class="block text-gray-900 animate-fade-in-down" style="animation-delay: 200ms">Future of</span>
+                        <span class="block text-gray-900 animate-fade-in-down" style="animation-delay: 400ms">Ticketing</span>
+                        <span class="block text-blue-600 animate-fade-in-down" style="animation-delay: 600ms">is on the</span>
+                        <span class="block text-blue-600 animate-fade-in-down" style="animation-delay: 800ms">Blockchain</span>
+                    </h1>
+                    <p class="mt-6 text-lg text-gray-500 max-w-xl animate-fade-in" style="animation-delay: 1000ms">
+                        Experience hassle-free, secure ticket purchasing with blockchain technology. Say goodbye to scalpers and fraudulent tickets.
+                    </p>
+                </div>
+                <!-- Image -->
+                <div class="relative h-96 group" data-aos="fade-left" data-aos-duration="1000">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-blue-600/40 to-transparent rounded-3xl z-10 
+                        group-hover:from-blue-600/50 transition-all duration-500"></div>
+                    <div class="absolute inset-0 bg-white rounded-3xl shadow-2xl transform 
+                        group-hover:scale-[1.02] transition-all duration-500">
+                        <img
+                        class="w-full h-full object-cover object-center rounded-3xl transform 
+                            group-hover:scale-105 transition-all duration-700"
+                        src="data:image/jpeg;base64,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"
+                        alt="Concert crowd"
+                      />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Process Section -->
+    <div class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900">
+                    Your Journey to Secure Tickets
+                </h2>
+                <p class="mt-4 text-lg text-gray-500">Four simple steps to get your blockchain-verified tickets</p>
+            </div>
+
+            <div class="mt-20">
+                <div class="relative">
+                    <!-- Connection Line -->
+                    <div class="hidden md:block absolute w-4/5 h-1 bg-blue-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                    
+                    <!-- Process Steps -->
+                    <div class="relative grid grid-cols-1 gap-12 md:grid-cols-4 md:gap-8">
+                        <!-- Step 1 -->
+                        <div data-aos="fade-up" data-aos-delay="0" class="relative flex flex-col items-center">
+                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-2xl font-bold mb-4">1</div>
+                            <h3 class="text-lg font-medium mb-2">Sign Up</h3>
+                            <p class="text-gray-500 text-center">Create your account with email and personal details</p>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div data-aos="fade-up" data-aos-delay="100" class="relative flex flex-col items-center">
+                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-2xl font-bold mb-4">2</div>
+                            <h3 class="text-lg font-medium mb-2">Verify Identity</h3>
+                            <p class="text-gray-500 text-center">Quick and secure identity verification process</p>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div data-aos="fade-up" data-aos-delay="200" class="relative flex flex-col items-center">
+                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-2xl font-bold mb-4">3</div>
+                            <h3 class="text-lg font-medium mb-2">Purchase Tickets</h3>
+                            <p class="text-gray-500 text-center">Select and buy tickets for your favorite events</p>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div data-aos="fade-up" data-aos-delay="300" class="relative flex flex-col items-center">
+                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-2xl font-bold mb-4">4</div>
+                            <h3 class="text-lg font-medium mb-2">Receive NFT</h3>
+                            <p class="text-gray-500 text-center">Get your ticket as an NFT in your wallet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center">
+                <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    Why Choose BlockTix?
+                </h2>
+            </div>
+
+            <div class="mt-10">
+                <div class="space-y-10 md:space-y-0 md:grid md:grid-cols-3 md:gap-x-8 md:gap-y-10">
+                    <!-- Benefit 1 -->
+                    <div class="relative" data-aos="fade-up">
+                        <div class="text-lg font-medium text-gray-900">No Scalping</div>
+                        <p class="mt-2 text-base text-gray-500">
+                            One ticket per verified identity. Say goodbye to ticket scalping.
+                        </p>
+                    </div>
+
+                    <!-- Benefit 2 -->
+                    <div class="relative" data-aos="fade-up" data-aos-delay="100">
+                        <div class="text-lg font-medium text-gray-900">100% Authentic</div>
+                        <p class="mt-2 text-base text-gray-500">
+                            Blockchain-verified tickets that cannot be counterfeited.
+                        </p>
+                    </div>
+
+                    <!-- Benefit 3 -->
+                    <div class="relative" data-aos="fade-up" data-aos-delay="200">
+                        <div class="text-lg font-medium text-gray-900">Instant Delivery</div>
+                        <p class="mt-2 text-base text-gray-500">
+                            NFT tickets delivered to your wallet immediately after purchase.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- CTA Section -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-4xl font-bold text-white mb-8" data-aos="fade-up">
+                    What Are You Waiting For?
+                </h2>
+                <p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+                    Join thousands of event-goers who have already made the switch to secure, blockchain-verified ticketing.
+                </p>
+                <a href="{{ url_for('user.signup') }}" data-aos="fade-up" data-aos-delay="200">
+                    <button class="bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg 
+                        transform hover:scale-105 transition-all duration-300 
+                        hover:shadow-xl hover:bg-blue-50">
+                        Start Your Journey Now
+                    </button>
+                </a>
+            </div>
+        </div>
+    
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div class="col-span-1">
+                    <h3 class="text-xl font-bold mb-4">BlockTix</h3>
+                    <p class="text-gray-400">Revolutionizing the ticketing industry with blockchain technology</p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="col-span-1">
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Events</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">How It Works</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Legal -->
+                <div class="col-span-1">
+                    <h3 class="text-lg font-semibold mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Cookie Policy</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div class="col-span-1">
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="text-gray-400">Email: support@blocktix.com</li>
+                        <li class="text-gray-400">Phone: +1 (555) 123-4567</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Bottom Bar -->
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 BlockTix. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize AOS animation library
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>

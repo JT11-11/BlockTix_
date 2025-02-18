@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockTix - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar with collapse functionality -->
+        <div id="sidebar" class="w-64 bg-blue-800 text-white h-screen flex flex-col justify-between transition-all duration-300 overflow-hidden">
+            <div>
+                <div class="p-4 flex justify-between items-center">
+                    <h1 class="text-2xl font-bold sidebar-text">BlockTix Admin</h1>
+                    <button id="sidebarCollapseBtn" class="text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                </div>
+                <nav class="mt-8">
+                    <a href="{{ url_for('admin.dashboard') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Users</span>
+                    </a>
+                    <a href="{{ url_for('admin.events') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Events</span>
+                    </a>
+                    <a href="{{ url_for('admin.promotions') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Promotions</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Logout button at the bottom -->
+            <div class="mb-8 px-4">
+                <a href="{{ url_for('admin.logout') }}" class="flex items-center px-6 py-3 text-white bg-red-700 hover:bg-red-800 rounded-lg transition-colors duration-200 justify-center">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span class="sidebar-text whitespace-nowrap">Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top bar with mobile menu button -->
+            <div class="bg-white shadow-sm py-3 px-6 flex justify-between items-center">
+                <button id="mobileMenuBtn" class="block lg:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div class="text-lg font-semibold lg:hidden">BlockTix Admin</div>
+                
+                <!-- Add Reports Button -->
+                <div>
+                    <a href="{{ url_for('admin.generate_user_report') }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        User Reports
+                    </a>
+                </div>
+            </div>
+
+            <!-- Top Stats Cards -->
+            <div class="p-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-blue-500 rounded-full">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h2 class="text-gray-500">Total Transactions</h2>
+                            <p class="text-2xl font-semibold">{{ total_transactions }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-green-500 rounded-full">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h2 class="text-gray-500">Total Events</h2>
+                            <p class="text-2xl font-semibold">{{ total_events }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-yellow-500 rounded-full">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h2 class="text-gray-500">Active Promotions</h2>
+                            <p class="text-2xl font-semibold">{{ total_promotions }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-purple-500 rounded-full">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h2 class="text-gray-500">Total Users</h2>
+                            <p class="text-2xl font-semibold">{{ total_users }}</p>
+                            <a href="{{ url_for('admin.generate_user_report') }}" class="text-blue-600 text-sm hover:underline flex items-center mt-2">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                View Report
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="px-8 mb-8">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">Transactions Over Time</h2>
+                        <a href="{{ url_for('admin.generate_user_report') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Generate User Report
+                        </a>
+                    </div>
+                    <canvas id="transactionsChart" height="100"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="px-8 mb-8">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6 border-b flex justify-between items-center">
+                        <h2 class="text-xl font-semibold">Recent Transactions</h2>
+                        <a href="{{ url_for('admin.generate_user_report') }}" class="text-blue-600 hover:text-blue-800 text-sm flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            User Report
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="text-left text-gray-500">
+                                    <th class="pb-4">Transaction ID</th>
+                                    <th class="pb-4">User</th>
+                                    <th class="pb-4">Event</th>
+                                    <th class="pb-4">Amount</th>
+                                    <th class="pb-4">Date</th>
+                                    <th class="pb-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in recent_transactions %}
+                                <tr class="border-t">
+                                    <td class="py-4">{{ transaction.ticket_id }}</td>
+                                    <td class="py-4">{{ transaction.user.fullname }}</td>
+                                    <td class="py-4">{{ transaction.event.event_name }}</td>
+                                    <td class="py-4">${{ "%.2f"|format(transaction.amount_paid) }}</td>
+                                    <td class="py-4">{{ transaction.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td class="py-4">
+                                        <span class="px-2 py-1 text-sm rounded-full 
+                                            {% if transaction.status == 'active' %}
+                                                bg-green-100 text-green-800
+                                            {% else %}
+                                                bg-gray-100 text-gray-800
+                                            {% endif %}">
+                                            {{ transaction.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart initialization
+        const ctx = document.getElementById('transactionsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ dates|tojson }},
+                datasets: [{
+                    label: 'Transactions',
+                    data: {{ transaction_counts|tojson }},
+                    borderColor: 'rgb(59, 130, 246)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Sidebar collapse functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            
+            // For desktop view - toggle sidebar width
+            sidebarCollapseBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('w-64');
+                sidebar.classList.toggle('w-16');
+                
+                // Toggle visibility of text elements
+                sidebarTexts.forEach(text => {
+                    text.classList.toggle('hidden');
+                });
+                
+                // Rotate the collapse button when sidebar is collapsed
+                this.querySelector('svg').classList.toggle('rotate-180');
+            });
+            
+            // For mobile view
+            mobileMenuBtn.addEventListener('click', function() {
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                }
+            });
+            
+            // If mobile, hide sidebar by default
+            function handleResize() {
+                if (window.innerWidth < 1024) { // lg breakpoint
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0', 'w-16');
+                    sidebar.classList.add('w-64');
+                    sidebarTexts.forEach(text => {
+                        text.classList.remove('hidden');
+                    });
+                    sidebarCollapseBtn.querySelector('svg').classList.remove('rotate-180');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                }
+            }
+            
+            // Initial setup
+            handleResize();
+            
+            // Handle window resize
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>

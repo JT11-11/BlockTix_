@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockTix - Edit Event</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar with collapse functionality -->
+        <div id="sidebar" class="w-64 bg-blue-800 text-white h-screen flex flex-col justify-between transition-all duration-300 overflow-hidden">
+            <div>
+                <div class="p-4 flex justify-between items-center">
+                    <h1 class="text-2xl font-bold sidebar-text">BlockTix Admin</h1>
+                    <button id="sidebarCollapseBtn" class="text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                </div>
+                <nav class="mt-8">
+                    <a href="{{ url_for('admin.dashboard') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Users</span>
+                    </a>
+                    <a href="{{ url_for('admin.events') }}" class="flex items-center px-6 py-3 bg-indigo-700 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Events</span>
+                    </a>
+                    <a href="{{ url_for('admin.promotions') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Promotions</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Logout button at the bottom -->
+            <div class="mb-8 px-4">
+                <a href="{{ url_for('admin.logout') }}" class="flex items-center px-6 py-3 text-white bg-red-700 hover:bg-red-800 rounded-lg transition-colors duration-200 justify-center">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span class="sidebar-text whitespace-nowrap">Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top bar with mobile menu button -->
+            <div class="bg-white shadow-sm py-3 px-6 flex justify-between items-center">
+                <button id="mobileMenuBtn" class="block lg:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div class="text-lg font-semibold lg:hidden">Edit Event</div>
+                
+                <div class="flex space-x-2">
+                    <a href="{{ url_for('admin.events') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        View Event
+                    </a>
+                    <a href="{{ url_for('admin.events') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Back to Events
+                    </a>
+                </div>
+            </div>
+
+            <!-- Edit Event Form -->
+            <div class="p-8">
+                <div class="mb-6 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Edit Event</h1>
+                        <p class="text-gray-600 mt-1">Update the details for "{{ event.event_name }}"</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-gray-500">Created: {{ event.created_at.strftime('%Y-%m-%d') }}</span>
+                        <span class="text-sm text-gray-500">|</span>
+                        <span class="text-sm text-gray-500">Last Updated: {{ event.updated_at.strftime('%Y-%m-%d') }}</span>
+                    </div>
+                </div>
+                
+                <form action="{{ url_for('admin.edit_event', event_id=event.id) }}" method="post" enctype="multipart/form-data" class="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div class="p-6 space-y-6">
+                        <!-- Event Basic Info Section -->
+                        <div class="border-b pb-6">
+                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="event_name" class="block text-sm font-medium text-gray-700 mb-1">Event Name <span class="text-red-600">*</span></label>
+                                    <input type="text" id="event_name" name="event_name" value="{{ event.event_name }}" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label for="venue" class="block text-sm font-medium text-gray-700 mb-1">Venue <span class="text-red-600">*</span></label>
+                                    <input type="text" id="venue" name="venue" value="{{ event.venue }}" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Event Date & Time Section -->
+                        <div class="border-b pb-6">
+                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Date & Time</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label for="event_date" class="block text-sm font-medium text-gray-700 mb-1">Event Date <span class="text-red-600">*</span></label>
+                                    <input type="date" id="event_date" name="event_date" value="{{ event.event_date.strftime('%Y-%m-%d') }}" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label for="event_time" class="block text-sm font-medium text-gray-700 mb-1">Event Time <span class="text-red-600">*</span></label>
+                                    <input type="time" id="event_time" name="event_time" value="{{ event.event_time.strftime('%H:%M') }}" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label for="verification_pin" class="block text-sm font-medium text-gray-700 mb-1">Verification PIN (4 digits)</label>
+                                    <input type="text" id="verification_pin" name="verification_pin" value="{{ event.verification_pin or '' }}" pattern="[0-9]{4}" maxlength="4" placeholder="Optional" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <p class="text-xs text-gray-500 mt-1">Used for on-site ticket verification</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tickets & Pricing Section -->
+                        <div class="border-b pb-6">
+                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Tickets & Pricing</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="available_tickets" class="block text-sm font-medium text-gray-700 mb-1">Available Tickets <span class="text-red-600">*</span></label>
+                                    <input type="number" id="available_tickets" name="available_tickets" value="{{ event.available_tickets }}" min="1" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    {% if sold_tickets and sold_tickets > 0 %}
+                                    <p class="text-xs text-amber-600 mt-1">Note: {{ sold_tickets }} tickets have already been sold.</p>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <label for="ticket_price" class="block text-sm font-medium text-gray-700 mb-1">Ticket Price ($) <span class="text-red-600">*</span></label>
+                                    <div class="mt-1 relative rounded-md shadow-sm">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">$</span>
+                                        </div>
+                                        <input type="number" id="ticket_price" name="ticket_price" value="{{ event.ticket_price }}" min="0" step="0.01" required class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    </div>
+                                    {% if sold_tickets and sold_tickets > 0 %}
+                                    <p class="text-xs text-amber-600 mt-1">Warning: Changing the price will not affect already sold tickets.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Event Description Section -->
+                        <div class="border-b pb-6">
+                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Event Description</h2>
+                            <div>
+                                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description <span class="text-red-600">*</span></label>
+                                <textarea id="description" name="description" rows="6" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ event.description }}</textarea>
+                            </div>
+                        </div>
+                        <!-- Event Media Section -->
+                            <div class="border-b pb-6">
+                                <h2 class="text-lg font-semibold text-gray-900 mb-4">Event Media</h2>
+                                <div>
+                                    <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Event Image</label>
+                                    {% if event.image_url %}
+                                    <div class="mt-2 flex items-center space-x-6 mb-4">
+                                        <img src="{{ event.image_url }}" 
+                                            alt="{{ event.event_name }}" 
+                                            class="h-32 w-auto object-cover rounded">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" 
+                                                id="remove_image" 
+                                                name="remove_image" 
+                                                class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
+                                            <label for="remove_image" class="ml-2 block text-sm text-red-600">
+                                                Remove current image
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    <input type="file" 
+                                        id="image" 
+                                        name="image" 
+                                        accept="image/*" 
+                                        class="w-full border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 py-2 px-3">
+                                    <p class="text-xs text-gray-500 mt-1">Upload a new image to replace the current one. Recommended size: 1200x600 pixels, max 2MB.</p>
+                                </div>
+                            </div>
+                        <!-- Eco-Friendly Features Section -->
+                        <div class="pb-2">
+                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Eco-Friendly Features</h2>
+                            <p class="text-sm text-gray-600 mb-4">Select all eco-friendly features available at your event.</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="eco_paper_straws" name="eco_paper_straws" type="checkbox" {% if event.eco_paper_straws %}checked{% endif %} class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="eco_paper_straws" class="font-medium text-gray-700">Paper Straws</label>
+                                        <p class="text-gray-500">Event uses paper straws instead of plastic ones</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="eco_public_transport" name="eco_public_transport" type="checkbox" {% if event.eco_public_transport %}checked{% endif %} class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="eco_public_transport" class="font-medium text-gray-700">Public Transport</label>
+                                        <p class="text-gray-500">Event is accessible by public transportation</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="eco_recycling" name="eco_recycling" type="checkbox" {% if event.eco_recycling %}checked{% endif %} class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="eco_recycling" class="font-medium text-gray-700">Recycling Available</label>
+                                        <p class="text-gray-500">Event offers recycling facilities</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="eco_composting" name="eco_composting" type="checkbox" {% if event.eco_composting %}checked{% endif %} class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="eco_composting" class="font-medium text-gray-700">Composting Available</label>
+                                        <p class="text-gray-500">Event offers composting facilities</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="eco_renewable_energy" name="eco_renewable_energy" type="checkbox" {% if event.eco_renewable_energy %}checked{% endif %} class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="eco_renewable_energy" class="font-medium text-gray-700">Renewable Energy</label>
+                                        <p class="text-gray-500">Event is powered by renewable energy sources</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <!-- Form Actions -->
+                    <div class="px-6 py-4 bg-gray-50 text-right">
+                        <button type="button" onclick="window.location.href='{{ url_for('admin.events') }}'" class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-2">
+                            Cancel
+                        </button>
+                        <button type="submit" class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Update Event
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar collapse functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            
+            // For desktop view - toggle sidebar width
+            sidebarCollapseBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('w-64');
+                sidebar.classList.toggle('w-16');
+                
+                // Toggle visibility of text elements
+                sidebarTexts.forEach(text => {
+                    text.classList.toggle('hidden');
+                });
+                
+                // Rotate the collapse button when sidebar is collapsed
+                this.querySelector('svg').classList.toggle('rotate-180');
+            });
+            
+            // For mobile view
+            mobileMenuBtn.addEventListener('click', function() {
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                }
+            });
+            
+            // If mobile, hide sidebar by default
+            function handleResize() {
+                if (window.innerWidth < 1024) { // lg breakpoint
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0', 'w-16');
+                    sidebar.classList.add('w-64');
+                    sidebarTexts.forEach(text => {
+                        text.classList.remove('hidden');
+                    });
+                    sidebarCollapseBtn.querySelector('svg').classList.remove('rotate-180');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                }
+            }
+            
+            // Initial setup
+            handleResize();
+            
+            // Handle window resize
+            window.addEventListener('resize', handleResize);
+            
+            // Image handling
+            const removeImageCheckbox = document.getElementById('remove_image');
+            const imageFileInput = document.getElementById('image');
+            
+            if (removeImageCheckbox && imageFileInput) {
+                imageFileInput.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        removeImageCheckbox.checked = false;
+                        removeImageCheckbox.disabled = true;
+                    } else {
+                        removeImageCheckbox.disabled = false;
+                    }
+                });
+                
+                removeImageCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        imageFileInput.value = '';
+                        imageFileInput.disabled = true;
+                    } else {
+                        imageFileInput.disabled = false;
+                    }
+                });
+            }
+                        // Form validation
+            const form = document.querySelector('form');
+
+            form.addEventListener('submit', function(event) {
+                let hasError = false;
+                const eventDate = document.getElementById('event_date').value;
+                const ticketPrice = document.getElementById('ticket_price').value;
+                const availableTickets = document.getElementById('available_tickets').value;
+                const soldTickets = {{ sold_tickets|default(0) }};
+                const isEventInPast = {% if event.event_date < now_date %}true{% else %}false{% endif %};
+                
+                // For past events, don't validate date
+                if (!isEventInPast) {
+                    // Validate date is not in the past
+                    const selectedDate = new Date(eventDate);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    if (selectedDate < today) {
+                        alert('Event date cannot be in the past');
+                        hasError = true;
+                    }
+                }
+                
+                // Validate ticket price is positive
+                if (parseFloat(ticketPrice) < 0) {
+                    alert('Ticket price cannot be negative');
+                    hasError = true;
+                }
+                
+                // Validate available tickets is at least the number of sold tickets
+                if (parseInt(availableTickets) < soldTickets) {
+                    alert(`Available tickets must be at least ${soldTickets} (the number already sold)`);
+                    hasError = true;
+                }
+                
+                // Validate available tickets is positive
+                if (parseInt(availableTickets) <= 0) {
+                    alert('Available tickets must be greater than zero');
+                    hasError = true;
+                }
+                
+                if (hasError) {
+                    event.preventDefault();
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

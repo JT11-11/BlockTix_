@@ -1,0 +1,81 @@
+{% extends "User/dashboard.html" %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Welcome Message -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h1 class="text-3xl font-bold text-gray-800">Hello, {{ session['user_fullname'] }}!</h1>
+        <p class="text-gray-600 mt-2">Welcome back to BlockTix. Here are your tickets and promotions.</p>
+    </div>
+
+    <!-- Tickets Section -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-xl font-semibold">Your Tickets</h2>
+        </div>
+        <div class="p-6">
+            {% if tickets %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for ticket in tickets %}
+                    <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-semibold text-lg">{{ ticket.event_name }}</h3>
+                                <p class="text-sm text-gray-600">Ticket #{{ ticket.ticket_number }}</p>
+                            </div>
+                            <span class="px-2 py-1 text-xs rounded-full 
+                                {% if ticket.status == 'active' %}
+                                    bg-green-100 text-green-800
+                                {% else %}
+                                    bg-gray-100 text-gray-800
+                                {% endif %}">
+                                {{ ticket.status }}
+                            </span>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p>Purchased: {{ ticket.purchase_date.strftime('%B %d, %Y') }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8 text-gray-500">
+                    <p>You don't have any tickets yet.</p>
+                    <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150">
+                        Browse Events
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Promotions Section -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-xl font-semibold">Available Promotions</h2>
+        </div>
+        <div class="p-6">
+            {% if promotions %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for promo in promotions %}
+                    <div class="border rounded-lg p-4 bg-gradient-to-br from-blue-50 to-white">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-semibold text-lg text-blue-800">{{ promo.title }}</h3>
+                            <span class="text-2xl font-bold text-blue-600">{{ promo.discount_percent }}%</span>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-600">{{ promo.description }}</p>
+                        <div class="mt-4 text-sm text-gray-500">
+                            Valid until: {{ promo.valid_until.strftime('%B %d, %Y') }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8 text-gray-500">
+                    <p>No promotions available at the moment.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

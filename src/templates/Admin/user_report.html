@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockTix - User Reports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar with collapse functionality - same as in other templates -->
+        <div id="sidebar" class="w-64 bg-blue-800 text-white h-screen flex flex-col justify-between transition-all duration-300 overflow-hidden">
+            <div>
+                <div class="p-4 flex justify-between items-center">
+                    <h1 class="text-2xl font-bold sidebar-text">BlockTix Admin</h1>
+                    <button id="sidebarCollapseBtn" class="text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                </div>
+                <nav class="mt-8">
+                    <!-- Navigation items - same as other templates -->
+                    <a href="{{ url_for('admin.dashboard') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" class="flex items-center px-6 py-3 bg-indigo-700 text-white group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Users</span>
+                    </a>
+                    <a href="{{ url_for('admin.events') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Events</span>
+                    </a>
+                    <a href="{{ url_for('admin.promotions') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Promotions</span>
+                    </a>
+ 
+                </nav>
+            </div>
+            
+            <!-- Logout button at the bottom -->
+            <div class="mb-8 px-4">
+                <a href="{{ url_for('admin.logout') }}" class="flex items-center px-6 py-3 text-white bg-red-700 hover:bg-red-800 rounded-lg transition-colors duration-200 justify-center">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span class="sidebar-text whitespace-nowrap">Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top bar with mobile menu button -->
+            <div class="bg-white shadow-sm py-3 px-6 flex justify-between items-center">
+                <button id="mobileMenuBtn" class="block lg:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div class="text-lg font-semibold lg:hidden">BlockTix Admin</div>
+                
+                <div class="flex items-center">
+                    <span class="mr-2 text-sm text-gray-600">{{ session.get('admin_name', 'Admin') }}</span>
+                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                        {{ session.get('admin_name', 'A')[0] }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Report Content -->
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold text-gray-800">User Reports</h1>
+                    <div class="flex space-x-2">
+                        <button id="exportCSVBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Export CSV
+                        </button>
+                        <button id="printReportBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                            </svg>
+                            Print Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-blue-500 rounded-full">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-gray-500">Total Users</h2>
+                                <p class="text-2xl font-semibold">{{ total_users }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-green-500 rounded-full">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-gray-500">Verified Users</h2>
+                                <p class="text-2xl font-semibold">{{ verified_users }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-yellow-500 rounded-full">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-gray-500">Users with Wallets</h2>
+                                <p class="text-2xl font-semibold">{{ users_with_wallet }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-blue-500 rounded-full">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-gray-500">Total Tickets</h2>
+                                <p class="text-2xl font-semibold">{{ total_tickets }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Visualization -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <!-- Pie Chart: User Verification Status -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h2 class="text-xl font-semibold mb-4">User Verification Status</h2>
+                        <div class="h-72">
+                            <canvas id="verificationChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Bar Chart: Users with Tickets -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h2 class="text-xl font-semibold mb-4">Ticket Distribution</h2>
+                        <div class="h-72">
+                            <canvas id="ticketDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Filters -->
+                <div class="bg-white rounded-lg shadow mb-8 p-6">
+                    <h2 class="text-xl font-semibold mb-4">Report Filters</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="searchInput" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                            <div class="relative">
+                                <input type="text" id="searchInput" placeholder="Search by name or email..." class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <svg class="w-5 h-5 absolute right-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="verificationFilter" class="block text-sm font-medium text-gray-700 mb-1">Verification Status</label>
+                            <select id="verificationFilter" class="w-full border rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="all">All Users</option>
+                                <option value="verified">Verified Only</option>
+                                <option value="unverified">Unverified Only</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="walletFilter" class="block text-sm font-medium text-gray-700 mb-1">Wallet Status</label>
+                            <select id="walletFilter" class="w-full border rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="all">All Users</option>
+                                <option value="with_wallet">With Wallet Only</option>
+                                <option value="without_wallet">Without Wallet Only</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Table for Report -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="p-6 border-b">
+                        <h2 class="text-xl font-semibold">User Report</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verification</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wallet</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Tickets</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active Tickets</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="reportTableBody">
+                                {% for user_data in report %}
+                                <tr data-verification="{{ 'verified' if user_data.is_verified else 'unverified' }}" 
+                                    data-wallet="{{ 'with_wallet' if user_data.has_wallet else 'without_wallet' }}">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user_data.id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
+                                                {{ user_data.fullname[0] }}
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ user_data.fullname }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user_data.email }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs rounded-full
+                                            {% if user_data.is_verified %}
+                                                bg-green-100 text-green-800
+                                            {% else %}
+                                                bg-yellow-100 text-yellow-800
+                                            {% endif %}">
+                                            {{ 'Verified' if user_data.is_verified else 'Unverified' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {% if user_data.has_wallet %}
+                                            <span class="text-green-600">Connected</span>
+                                        {% else %}
+                                            <span class="text-gray-500">Not Connected</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user_data.tickets_count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user_data.active_tickets }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% if report|length == 0 %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center" colspan="8">
+                                        No users found
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if report|length > 0 %}
+                    <div class="px-6 py-4 border-t">
+                        <p class="text-sm text-gray-700">
+                            Showing <span id="visibleCount">{{ report|length }}</span> of <span id="totalCount">{{ report|length }}</span> users
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            
+            // For desktop view - toggle sidebar width
+            sidebarCollapseBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('w-64');
+                sidebar.classList.toggle('w-16');
+                
+                // Toggle visibility of text elements
+                sidebarTexts.forEach(text => {
+                    text.classList.toggle('hidden');
+                });
+                
+                // Rotate the collapse button when sidebar is collapsed
+                this.querySelector('svg').classList.toggle('rotate-180');
+            });
+            
+            // For mobile view
+            mobileMenuBtn.addEventListener('click', function() {
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                }
+            });
+            
+            // If mobile, hide sidebar by default
+            function handleResize() {
+                if (window.innerWidth < 1024) { // lg breakpoint
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0', 'w-16');
+                    sidebar.classList.add('w-64');
+                    sidebarTexts.forEach(text => {
+                        text.classList.remove('hidden');
+                    });
+                    sidebarCollapseBtn.querySelector('svg').classList.remove('rotate-180');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                }
+            }
+            
+            // Initial setup
+            handleResize();
+            
+            // Handle window resize
+            window.addEventListener('resize', handleResize);
+            
+            // Initialize Charts
+            initializeCharts();
+            
+            // Filter functionality
+            const searchInput = document.getElementById('searchInput');
+            const verificationFilter = document.getElementById('verificationFilter');
+            const walletFilter = document.getElementById('walletFilter');
+            
+            // Add event listeners for filters
+            searchInput.addEventListener('keyup', filterUsers);
+            verificationFilter.addEventListener('change', filterUsers);
+            walletFilter.addEventListener('change', filterUsers);
+            
+            // Export CSV
+            document.getElementById('exportCSVBtn').addEventListener('click', exportUsersToCSV);
+            
+            // Print Report
+            document.getElementById('printReportBtn').addEventListener('click', printReport);
+        });
+        
+        // Initialize Charts
+        function initializeCharts() {
+            // Verification Status Pie Chart
+            const verificationCtx = document.getElementById('verificationChart').getContext('2d');
+            const verifiedCount = {{ verified_users }};
+            const unverifiedCount = {{ total_users - verified_users }};
+            
+            new Chart(verificationCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Verified', 'Unverified'],
+                    datasets: [{
+                        label: 'User Verification Status',
+                        data: [verifiedCount, unverifiedCount],
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.7)',
+                            'rgba(250, 204, 21, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(34, 197, 94, 1)',
+                            'rgba(250, 204, 21, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Ticket Distribution Bar Chart
+            const ticketDistCtx = document.getElementById('ticketDistributionChart').getContext('2d');
+            
+            // Get ticket distribution from server data
+            const ticketCounts = [
+                {{ users_with_no_tickets }},
+                {{ users_with_1_to_5_tickets }},
+                {{ users_with_6_to_10_tickets }},
+                {{ users_with_more_than_10_tickets }}
+            ];
+            
+            new Chart(ticketDistCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['No Tickets', '1-5 Tickets', '6-10 Tickets', 'More than 10'],
+                    datasets: [{
+                        label: 'Number of Users',
+                        data: ticketCounts,
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Filter users based on search, verification, and wallet
+        function filterUsers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const verificationFilter = document.getElementById('verificationFilter').value;
+            const walletFilter = document.getElementById('walletFilter').value;
+            
+            const rows = document.querySelectorAll('#reportTableBody tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                if (row.classList.contains('no-results-row')) {
+                    row.remove();
+                    return;
+                }
+                
+                // Get user data from row
+                const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                const email = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                const verification = row.getAttribute('data-verification');
+                const wallet = row.getAttribute('data-wallet');
+                
+                // Check if user matches all filters
+                const matchesSearch = name.includes(searchTerm) || email.includes(searchTerm);
+                const matchesVerification = verificationFilter === 'all' || verification === verificationFilter;
+                const matchesWallet = walletFilter === 'all' || wallet === walletFilter;
+                
+                if (matchesSearch && matchesVerification && matchesWallet) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update visible count
+            document.getElementById('visibleCount').textContent = visibleCount;
+            
+            // Show message if no results
+            if (visibleCount === 0 && rows.length > 0) {
+                const tbody = document.getElementById('reportTableBody');
+                const noResultsRow = document.createElement('tr');
+                noResultsRow.classList.add('no-results-row');
+                noResultsRow.innerHTML = '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center" colspan="8">No users match your search criteria</td>';
+                tbody.appendChild(noResultsRow);
+            }
+        }
+        
+        // Export users to CSV
+        function exportUsersToCSV() {
+            const rows = document.querySelectorAll('#reportTableBody tr:not([style="display: none;"]):not(.no-results-row)');
+            
+            if (rows.length === 0) {
+                Swal.fire({
+                    title: 'No Data to Export',
+                    text: 'There are no visible users to export.',
+                    icon: 'warning'
+                });
+                return;
+            }
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "ID,Name,Email,Verification Status,Wallet Status,Total Tickets,Active Tickets\n";
+            
+            rows.forEach(row => {
+                const columns = row.querySelectorAll('td');
+                
+                const id = columns[0].textContent;
+                const name = columns[1].querySelector('.text-sm').textContent;
+                const email = columns[2].textContent;
+                const verification = columns[3].textContent.trim();
+                const wallet = columns[4].textContent.trim();
+                const totalTickets = columns[5].textContent;
+                const activeTickets = columns[6].textContent;
+                
+                csvContent += `"${id}","${name}","${email}","${verification}","${wallet}","${totalTickets}","${activeTickets}"\n`;
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `user_report_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Print report functionality
+        function printReport() {
+            const printWindow = window.open('', '_blank');
+            
+            // Get current date
+            const currentDate = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric'
+            });
+            
+            // Create print content
+            let printContent = `
+                <html>
+                    <head>
+                        <title>BlockTix - User Report (${currentDate})</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 30px; }
+                            h1 { text-align: center; color: #1e40af; margin-bottom: 20px; }
+                            .report-date { text-align: center; margin-bottom: 30px; color: #666; }
+                            .stats-container { display: flex; justify-content: space-between; margin-bottom: 30px; }
+                            .stat-box { border: 1px solid #ccc; padding: 15px; border-radius: 8px; width: 22%; }
+                            .stat-title { color: #666; font-size: 14px; margin-bottom: 5px; }
+                            .stat-value { font-size: 24px; font-weight: bold; color: #1e40af; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                            th { background-color: #f3f4f6; text-align: left; padding: 10px; }
+                            td { padding: 10px; border-top: 1px solid #eee; }
+                            .verification-verified { color: #22c55e; }
+                            .verification-unverified { color: #eab308; }
+                            @media print {
+                                .no-print { display: none; }
+                                body { margin: 0; }
+                                table { page-break-inside: auto; }
+                                tr { page-break-inside: avoid; page-break-after: auto; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>BlockTix User Report</h1>
+                        <div class="report-date">Generated on ${currentDate}</div>
+                        
+                        <div class="stats-container">
+                            <div class="stat-box">
+                                <div class="stat-title">Total Users</div>
+                                <div class="stat-value">${document.querySelector('.p-3.bg-blue-500 + div p').textContent}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-title">Verified Users</div>
+                                <div class="stat-value">${document.querySelector('.p-3.bg-green-500 + div p').textContent}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-title">Users with Wallets</div>
+                                <div class="stat-value">${document.querySelector('.p-3.bg-yellow-500 + div p').textContent}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-title">Total Tickets</div>
+                                <div class="stat-value">${document.querySelectorAll('.p-3.bg-blue-500 + div p')[1].textContent}</div>
+                            </div>
+                        </div>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Verification</th>
+                                    <th>Wallet</th>
+                                    <th>Total Tickets</th>
+                                    <th>Active Tickets</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+            
+            // Get visible rows
+            const visibleRows = document.querySelectorAll('#reportTableBody tr:not([style="display: none;"]):not(.no-results-row)');
+            
+            visibleRows.forEach(row => {
+                const columns = row.querySelectorAll('td');
+                
+                const id = columns[0].textContent;
+                const name = columns[1].querySelector('.text-sm').textContent;
+                const email = columns[2].textContent;
+                const verification = columns[3].textContent.trim();
+                const verificationClass = verification === 'Verified' ? 'verification-verified' : 'verification-unverified';
+                const wallet = columns[4].textContent.trim();
+                const totalTickets = columns[5].textContent;
+                const activeTickets = columns[6].textContent;
+                
+                printContent += `
+                    <tr>
+                        <td>${id}</td>
+                        <td>${name}</td>
+                        <td>${email}</td>
+                        <td class="${verificationClass}">${verification}</td>
+                        <td>${wallet}</td>
+                        <td>${totalTickets}</td>
+                        <td>${activeTickets}</td>
+                    </tr>
+                `;
+            });
+            
+            printContent += `
+                            </tbody>
+                        </table>
+                        
+                        <div style="margin-top: 30px; text-align: center; color: #666;">
+                            <p>Showing ${visibleRows.length} out of ${document.getElementById('totalCount').textContent} users</p>
+                        </div>
+                        
+                        <div style="margin-top: 50px; border-top: 1px solid #eee; padding-top: 20px; color: #666; font-size: 12px;">
+                            <p>This report is confidential and for internal use only. © BlockTix ${new Date().getFullYear()}</p>
+                        </div>
+                        
+                        <div class="no-print" style="margin-top: 30px; text-align: center;">
+                            <button onclick="window.print();" style="padding: 10px 20px; background-color: #1e40af; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                Print Report
+                            </button>
+                            <button onclick="window.close();" style="padding: 10px 20px; background-color: #6b7280; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                Close
+                            </button>
+                        </div>
+                    </body>
+                </html>
+            `;
+            
+            printWindow.document.open();
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            
+            // Trigger print dialog after window loads
+            printWindow.onload = function() {
+                // printWindow.print();
+            };
+        }
+        
+    </script>
+</body>
+</html>

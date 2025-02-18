@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - BlockTix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+
+            color: white;
+        }
+        .event-slide {
+            transition: all 0.3s ease;
+        }
+        .tooltip {
+            position: relative;
+        }
+        .tooltip:hover::after {
+            content: attr(title);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #374151;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+            white-space: nowrap;
+            z-index: 50;
+            font-size: 12px;
+        }
+    </style>
+    <script>
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.getElementById('main-content');
+                const sidebarContent = document.getElementById('sidebar-content');
+                const miniIcons = document.getElementById('mini-icons');
+                
+                sidebar.classList.toggle('w-64');
+                sidebar.classList.toggle('w-16');
+                mainContent.classList.toggle('ml-64');
+                mainContent.classList.toggle('ml-16');
+                sidebarContent.classList.toggle('hidden');
+                miniIcons.classList.toggle('hidden');
+                
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('w-16'));
+            }
+            document.addEventListener('DOMContentLoaded', () => {
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (isCollapsed) {
+                    toggleSidebar();
+                }
+            });
+    </script>
+</head>
+<body>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed h-full bg-gray-900 text-white transition-all duration-300 w-64 z-20">
+            <!-- Toggle Button -->
+            <button onclick="toggleSidebar()" 
+                    class="absolute -right-3 top-4 bg-gray-900 text-white p-1 rounded-full hover:bg-gray-700 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+
+            <!-- Full Sidebar Content -->
+            <div id="sidebar-content">
+                <!-- Logo Area -->
+                <div class="h-16 flex items-center px-6 border-b border-gray-800">
+                    <h1 class="text-xl font-bold">BlockTix</h1>
+                </div>
+                
+                <!-- Navigation Menu -->
+                <nav class="px-4 pt-4">
+                    <a href="{{ url_for('user.dashboard') }}" 
+                       class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg mb-2 {% if request.endpoint == 'user.dashboard' %}bg-gray-800{% endif %}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <span class="transition-opacity duration-300">Home</span>
+                    </a>
+                    
+                    <a href="{{ url_for('user.events') }}" 
+                       class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg mb-2 {% if request.endpoint == 'user.events' %}bg-gray-800{% endif %}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="transition-opacity duration-300">Events</span>
+                    </a>
+                    
+                    <a href="{{ url_for('user.promotions') }}" 
+                       class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg mb-2 {% if request.endpoint == 'user.promotions' %}bg-gray-800{% endif %}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                        <span class="transition-opacity duration-300">Promotions</span>
+                    </a>
+                    
+                    <a href="{{ url_for('user.contact') }}" 
+                       class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg {% if request.endpoint == 'user.contact' %}bg-gray-800{% endif %}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="transition-opacity duration-300">Contact Us</span>
+                    </a>
+                </nav>
+                
+                <!-- User Profile Section -->
+                <div class="absolute bottom-0 w-full border-t border-gray-800">
+                    <div class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white font-bold">
+                                {{ session['user_fullname'][0] if session['user_fullname'] else 'U' }}
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-white">{{ session['user_fullname'] }}</p>
+                                <p class="text-xs text-gray-400">{{ session['user_email'] }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('user.logout') }}" 
+                           class="mt-4 block text-center py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-150">
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mini Icons (Hidden by default) -->
+            <div id="mini-icons" class="hidden pt-4">
+                <div class="flex flex-col items-center space-y-4">
+                    <a href="{{ url_for('user.dashboard') }}" class="p-2 hover:bg-gray-800 rounded-lg tooltip" title="Dashboard">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                    </a>
+                    <a href="{{ url_for('user.events') }}" class="p-2 hover:bg-gray-800 rounded-lg tooltip" title="Events">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </a>
+                    <a href="{{ url_for('user.promotions') }}" class="p-2 hover:bg-gray-800 rounded-lg tooltip" title="Promotions">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                    </a>
+                    <div class="absolute bottom-4 w-full flex justify-center">
+                        <a href="{{ url_for('user.logout') }}" class="p-2 hover:bg-red-600 rounded-lg tooltip" title="Logout">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content" class="flex-1 ml-64 transition-all duration-300">
+            <!-- Featured Events Carousel -->
+            <div class="relative h-[60vh] bg-black mb-8">
+                <div class="absolute inset-0 flex items-center">
+                    <button class="absolute left-4 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/75" onclick="prevSlide()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    
+                    <div class="overflow-hidden w-full h-[60vh]">
+                        <div class="flex transition-transform duration-500 h-full" id="carousel">
+                            {% for event in events %}
+                            <div class="event-slide w-full flex-shrink-0 relative">
+                                <img src="{{ event.image_url if event.image_url else url_for('static', filename='placeholder.jpg') }}"
+                                class="w-full h-full object-cover" 
+                                alt="{{ event.event_name }}">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end">
+                                    <div class="p-8 w-full">
+                                        <h2 class="text-4xl font-bold mb-2">{{ event.event_name }}</h2>
+                                        <p class="text-xl mb-4">{{ event.venue }}</p>
+                                        <p class="text-lg mb-6">{{ event.event_date.strftime('%B %d, %Y') }} at {{ event.event_time.strftime('%I:%M %p') }}</p>
+                                        <div class="flex gap-4">
+                                            <button onclick="showEventDetails({{ event.id }})" 
+                                                    class="bg-white text-black px-6 py-3 rounded-lg hover:bg-gray-200 transition">
+                                                More Details
+                                            </button>
+                                            <button onclick="window.location.href='{{ url_for('user.buy_ticket', event_id=event.id) }}'" 
+                                                    class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition">
+                                                Buy Ticket
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <button class="absolute right-4 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/75" onclick="nextSlide()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Event Grid Section -->
+            <div class="container mx-auto px-4 pb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for event in events %}
+                    <div class="bg-gray-800 rounded-lg overflow-hidden transform hover:scale-105 transition-all">
+                        <img src="{{ event.image_url if event.image_url else url_for('static', filename='placeholder.jpg') }}" 
+                             alt="{{ event.event_name }}" 
+                             class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold mb-2">{{ event.event_name }}</h3>
+                            <p class="text-gray-400 mb-2">{{ event.venue }}</p>
+                            <p class="text-gray-400 mb-2">
+                                {{ event.event_date.strftime('%B %d, %Y') }} at {{ event.event_time.strftime('%I:%M %p') }}
+                            </p>
+                            <p class="text-green-400 font-bold mb-4">${{ "%.2f"|format(event.ticket_price) }}</p>
+                            <div class="flex justify-between">
+                                <button onclick="showEventDetails({{ event.id }})" 
+                                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                                    More Details
+                                </button>
+                                <button onclick="window.location.href='/user/buy-ticket/{{ event.id }}'" 
+                                        class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+                                    Buy Ticket
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Event Details Modal -->
+            <div id="eventModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+                <div class="bg-gray-900 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto m-4">
+                    <div class="flex flex-col h-full">
+                        <!-- Image Section -->
+                        <div class="relative h-[300px]">
+                            <img id="modalEventImage" class="w-full h-full object-cover rounded-t-lg" src="data:image/jpeg;base64,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" alt="">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
+                            <button onclick="closeEventModal()" 
+                                    class="absolute top-4 right-4 text-white hover:text-gray-300 p-2 rounded-full bg-black/50">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Content Section -->
+                        <div class="p-6 text-white">
+                            <!-- Title and Price -->
+                            <div class="flex justify-between items-start mb-4">
+                                <h2 id="modalEventName" class="text-3xl font-bold"></h2>
+                                <p id="modalEventPrice" class="text-2xl font-bold text-green-400"></p>
+                            </div>
+
+                            <!-- Event Details -->
+                            <div class="grid grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-2">Event Details</h3>
+                                    <div class="space-y-2 text-gray-300">
+                                        <p id="modalEventVenue" class="flex items-center">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <span></span>
+                                        </p>
+                                        <p id="modalEventDateTime" class="flex items-center">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                            <span></span>
+                                        </p>
+                                        <p id="modalEventTickets" class="flex items-center">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                                            </svg>
+                                            <span></span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Eco-Friendly Features -->
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-2">Eco-Friendly Features</h3>
+                                    <div id="modalEcoFeatures" class="space-y-2">
+                                        <!-- Eco features will be dynamically added here -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold mb-2">About This Event</h3>
+                                <p id="modalEventDescription" class="text-gray-300 whitespace-pre-line"></p>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex gap-4">
+                                <button id="modalBuyButton" class="flex-1 bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition">
+                                    Buy Ticket
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carousel functionality
+        let currentSlide = 0;
+        const carousel = document.getElementById('carousel');
+        const slides = document.querySelectorAll('.event-slide');
+        const totalSlides = slides.length;
+
+        function updateCarousel() {
+            carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateCarousel();
+        }
+
+
+        setInterval(nextSlide, 5000);
+
+        
+        // Sidebar functionality
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const sidebarContent = document.getElementById('sidebar-content');
+            const miniIcons = document.getElementById('mini-icons');
+            
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-16');
+            mainContent.classList.toggle('ml-64');
+            mainContent.classList.toggle('ml-16');
+            sidebarContent.classList.toggle('hidden');
+            miniIcons.classList.toggle('hidden');
+            
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('w-16'));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
+                toggleSidebar();
+            }
+        });
+        function showEventDetails(eventId) {
+    fetch(`/user/event/${eventId}`)
+        .then(response => response.json())
+        .then(event => {
+            document.getElementById('modalEventImage').src = event.image_url ? 
+                event.image_url + `?t=${new Date().getTime()}` : '/static/placeholder.jpg';
+            
+            document.getElementById('modalEventName').textContent = event.name;
+            document.getElementById('modalEventPrice').textContent = `$${event.ticket_price.toFixed(2)}`;
+            document.getElementById('modalEventVenue').querySelector('span').textContent = event.venue;
+            document.getElementById('modalEventDateTime').querySelector('span').textContent = 
+                `${event.date} at ${event.time}`;
+            document.getElementById('modalEventTickets').querySelector('span').textContent = 
+                `${event.available_tickets} tickets available`;
+            document.getElementById('modalEventDescription').textContent = event.description;
+
+            // Eco-Friendly Features
+            const ecoFeaturesContainer = document.getElementById('modalEcoFeatures');
+            ecoFeaturesContainer.innerHTML = ''; 
+
+            const ecoFeatures = [
+                { key: 'eco_paper_straws', icon: '🥤', text: 'Paper Straws Only' },
+                { key: 'eco_public_transport', icon: '🚌', text: 'Free Public Transport' },
+                { key: 'eco_recycling', icon: '♻️', text: 'Recycling Program' },
+                { key: 'eco_composting', icon: '🌱', text: 'Composting Available' },
+                { key: 'eco_renewable_energy', icon: '⚡', text: 'Renewable Energy Powered' }
+            ];
+
+            ecoFeatures.forEach(feature => {
+                if (event[feature.key]) {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center text-gray-300';
+                    div.innerHTML = `
+                        <span class="mr-2">${feature.icon}</span>
+                        <span>${feature.text}</span>
+                    `;
+                    ecoFeaturesContainer.appendChild(div);
+                }
+            });
+
+            document.getElementById('modalBuyButton').onclick = () => 
+                window.location.href = `/user/buy-ticket/${event.id}`;
+
+            document.getElementById('eventModal').classList.remove('hidden');
+        })
+        .catch(error => console.error("Error fetching event data:", error));
+}
+
+        function closeEventModal() {
+            document.getElementById('eventModal').classList.add('hidden');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('eventModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('eventModal')) {
+                closeEventModal();
+            }
+        });
+    </script>
+</body>
+</html>

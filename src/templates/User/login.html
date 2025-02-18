@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockTix - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center">
+        <div class="flex w-full max-w-6xl mx-auto p-6">
+            <!-- Left Panel -->
+            <div class="w-1/2 bg-white p-12 rounded-l-2xl">
+                <div class="max-w-md mx-auto">
+                    <h2 class="text-4xl font-bold text-center mb-2">Sign in to BlockTix</h2>
+                    <p class="text-gray-500 text-center mb-8">Enter your credentials to access your account</p>
+
+                    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-6">
+                        <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                            <span class="block sm:inline"></span>
+                        </div>
+                        <div class="relative">
+                            <input type="email" name="email" 
+                                class="w-full bg-gray-100 px-4 py-3 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 pl-10" 
+                                placeholder="Email">
+                            <span class="absolute left-3 top-3.5 text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </span>
+                        </div>
+
+                        <div class="relative">
+                            <input type="password" name="password" 
+                                class="w-full bg-gray-100 px-4 py-3 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 pl-10" 
+                                placeholder="Password">
+                            <span class="absolute left-3 top-3.5 text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600">
+                                <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                            </label>
+                        </div>
+
+                        <div class="flex justify-center mb-4">
+                            <div class="g-recaptcha" data-sitekey="6Ld-ydcqAAAAAIIg7uL2eivRPDpfEA0-UXDm4fMo"></div>
+                        </div>
+
+                        <button type="submit" 
+                            class="w-full bg-blue-600 text-white px-4 py-3 rounded-full font-semibold hover:bg-blue-700 transition duration-300">
+                            SIGN IN
+                        </button>
+                        <a href="{{url_for('general.home')}}" 
+                        class="block w-full bg-gray-200 text-gray-700 px-4 py-3 rounded-full font-semibold hover:bg-gray-300 transition duration-300 text-center">
+                        Return to Home
+                        </a>
+                        <script>
+                            async function handleLogin(event) {
+                                event.preventDefault();
+                                const form = event.target;
+                                const formData = new FormData(form);
+                                const errorDiv = document.getElementById('errorMessage');
+                                
+                                try {
+                                    const response = await fetch('/user/login', {  
+                                        method: 'POST',
+                                        body: formData,
+                                        headers: {
+                                            'Accept': 'application/json'
+                                        }
+                                    });
+                                    
+                                    const data = await response.json();
+                                    
+                                    if (data.success) {
+                                        window.location.href = data.redirect;
+                                    } else {
+                                        showError(data.error);
+                                        grecaptcha.reset();
+                                    }
+                                } catch (error) {
+                                    console.error('Login error:', error);
+                                    showError('An error occurred during login');
+                                    grecaptcha.reset();
+                                }
+                            }
+                        
+                            function showError(message) {
+                                const errorDiv = document.getElementById('errorMessage');
+                                errorDiv.querySelector('span').textContent = message;
+                                errorDiv.classList.remove('hidden');
+                                setTimeout(() => {
+                                    errorDiv.classList.add('hidden');
+                                }, 5000);
+                            }
+                        </script>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="w-1/2 bg-blue-600 p-12 rounded-r-2xl flex flex-col justify-center text-white">
+                <h1 class="text-5xl font-bold mb-6">Hello, Friend!</h1>
+                <p class="text-xl mb-8">Enter your personal details and start journey with us</p>
+                <a href="{{url_for('user.signup')}}" class="border-2 border-white text-white px-12 py-3 rounded-full text-center font-semibold hover:bg-white hover:text-blue-600 transition duration-300 inline-block w-48">
+                    SIGN UP
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

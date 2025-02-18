@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockTix - Contact Us</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            light: '#7CB9E8',
+                            DEFAULT: '#00308F',
+                            dark: '#00308F'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tooltip {
+            position: relative;
+        }
+        .tooltip:hover::after {
+            content: attr(title);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #374151;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+            white-space: nowrap;
+            z-index: 50;
+            font-size: 12px;
+        }
+        
+        .form-container {
+            min-height: calc(100vh - 2rem);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .step.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .choice-button {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .choice-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .inquiry-option.selected,
+        .contact-option.selected {
+        background-color: #72A0C1;
+        color: white;
+        transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed h-full bg-gray-900 text-white transition-all duration-300 w-64 z-30">
+            <!-- Toggle Button -->
+            <button onclick="toggleSidebar()" 
+                    class="absolute -right-3 top-4 bg-gray-900 text-white p-1 rounded-full hover:bg-gray-700 transition-colors z-40">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+
+            <!-- Full Sidebar Content -->
+            <div id="sidebar-content">
+                <!-- Logo Area -->
+                <div class="h-16 flex items-center px-6 border-b border-gray-800">
+                    <h1 class="text-xl font-bold">BlockTix</h1>
+                </div>
+                
+                <!-- Navigation Menu -->
+                <nav class="px-4 pt-4">
+                    <a href="{{ url_for('user.dashboard') }}" 
+                       class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg mb-2 {% if request.endpoint == 'user.dashboard' %}bg-gray-800{% endif %}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <span class="transition-opacity duration-300">Home</span>
+                    </a>
+                    
+                    <a href="{{ url_for('user.events') }}" 
+                       class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg mb-2 {% if request.endpoint == 'user.events' %}bg-gray-800{% endif %}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="transition-opacity duration-300">Events</span>
+                    </a>
+                    
+                    <a href="{{ url_for('user.promotions') }}" 
+                       class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg mb-2 {% if request.endpoint == 'user.promotions' %}bg-gray-800{% endif %}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                        <span class="transition-opacity duration-300">Promotions</span>
+                    </a>
+                    
+                    <a href="{{ url_for('user.contact') }}" 
+                       class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg mb-2 bg-gray-800">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="transition-opacity duration-300">Contact Us</span>
+                    </a>
+                </nav>
+                
+                <!-- User Profile Section -->
+                <div class="absolute bottom-0 w-full border-t border-gray-800">
+                    <div class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white font-bold">
+                                {{ session['user_fullname'][0] if session['user_fullname'] else 'U' }}
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-white">{{ session['user_fullname'] }}</p>
+                                <p class="text-xs text-gray-400">{{ session['user_email'] }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('user.logout') }}" 
+                           class="mt-4 block text-center py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-150">
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mini Icons -->
+            <div id="mini-icons" class="hidden pt-4">
+                <div class="flex flex-col items-center space-y-4">
+                    <a href="{{ url_for('user.dashboard') }}" class="p-2 hover:bg-gray-800 rounded-lg tooltip" title="Dashboard">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                    </a>
+                    <a href="{{ url_for('user.events') }}" class="p-2 hover:bg-gray-800 rounded-lg tooltip" title="Events">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </a>
+                    <a href="{{ url_for('user.promotions') }}" class="p-2 hover:bg-gray-800 rounded-lg tooltip" title="Promotions">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                    </a>
+                    <div class="absolute bottom-4 w-full flex justify-center">
+                        <a href="{{ url_for('user.logout') }}" class="p-2 hover:bg-red-600 rounded-lg tooltip" title="Logout">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content" class="flex-1 ml-64 transition-all duration-300">
+            <div class="p-8">
+                <div class="form-container">
+                    <div class="w-full max-w-2xl">
+                        <!-- Step 1 -->
+                        <div class="step active" id="step1">
+                            <div class="bg-primary rounded-lg p-8 shadow-lg">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h1 class="text-3xl font-bold text-white">Let's connect</h1>
+                                    <span class="text-white/80 text-sm px-3 py-1 bg-white/10 rounded-full">Step 1 of 4</span>
+                                </div>
+                                
+                                <div class="space-y-6">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <input type="text" value="{{ session['user_fullname'] }}" readonly
+                                               class="w-full p-3 rounded-lg bg-white/90 border border-white/20">
+                                        <input type="text" value="{{ session['user_email'] }}" readonly
+                                               class="w-full p-3 rounded-lg bg-white/90 border border-white/20">
+                                    </div>
+                                    <button onclick="nextStep(2)" 
+                                            class="w-full py-3 px-6 text-white bg-white/20 rounded-lg hover:bg-white/30 
+                                                   transition duration-200 font-medium">
+                                        Continue
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="step hidden" id="step2">
+                            <div class="bg-primary rounded-lg p-8 shadow-lg">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h1 class="text-3xl font-bold text-white">What's your question about?</h1>
+                                    <span class="text-white/80 text-sm px-3 py-1 bg-white/10 rounded-full">Step 2 of 4</span>
+                                </div>
+
+                                <div class="space-y-6">
+                                    <p class="text-white text-lg">Please choose the category that best describes your inquiry.</p>
+                                    <div class="grid grid-cols-3 gap-4">
+                                        <button onclick="selectType('ticket-issues',this)" 
+                                                class="inquiry-option bg-white p-4 rounded-xl flex flex-col items-center gap-2 hover:shadow-lg">
+                                            <span class="text-2xl">🎫</span>
+                                            <span class="text-gray-700 font-medium">Ticket Issues</span>
+                                        </button>
+                                        <button onclick="selectType('payment-issues',this)" 
+                                                class="inquiry-option bg-white p-4 rounded-xl flex flex-col items-center gap-2 hover:shadow-lg">
+                                            <span class="text-2xl">💳</span>
+                                            <span class="text-gray-700 font-medium">Payment Issues</span>
+                                        </button>
+                                        <button onclick="selectType('refunds',this)" 
+                                                class="inquiry-option bg-white p-4 rounded-xl flex flex-col items-center gap-2 hover:shadow-lg">
+                                            <span class="text-2xl">💰</span>
+                                            <span class="text-gray-700 font-medium">Refunds</span>
+                                        </button>
+                                        <button onclick="selectType('tech-support',this)" 
+                                                class="inquiry-option bg-white p-4 rounded-xl flex flex-col items-center gap-2 hover:shadow-lg">
+                                            <span class="text-2xl">🛠</span>
+                                            <span class="text-gray-700 font-medium">Technical Support</span>
+                                        </button>
+                                        <button onclick="selectType('other',this)" 
+                                                class="inquiry-option bg-white p-4 rounded-xl flex flex-col items-center gap-2 hover:shadow-lg">
+                                            <span class="text-2xl">🤔</span>
+                                            <span class="text-gray-700 font-medium">Other</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="flex justify-between">
+                                        <button onclick="prevStep(1)" 
+                                                class="py-3 px-6 text-white border border-white/20 rounded-lg hover:bg-white/10 
+                                                    transition duration-200">
+                                            Back
+                                        </button>
+                                        <button onclick="nextStep(3)" 
+                                                class="py-3 px-6 text-white bg-white/20 rounded-lg hover:bg-white/30 
+                                                    transition duration-200 font-medium">
+                                            Continue
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="step hidden" id="step3">
+                            <div class="bg-primary rounded-lg p-8 shadow-lg">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h1 class="text-3xl font-bold text-white">Preferred Contact Method</h1>
+                                    <span class="text-white/80 text-sm px-3 py-1 bg-white/10 rounded-full">Step 3 of 4</span>
+                                </div>
+
+                                <div class="space-y-6">
+                                    <p class="text-white text-lg">How would you prefer us to reach out? 💬</p>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <button onclick="selectBudget('email',this)" 
+                                                class="contact-option bg-white p-4 rounded-xl text-center hover:shadow-lg">
+                                            <span class="text-2xl">📧</span>
+                                            <span class="block text-gray-700 font-medium mt-2">Email</span>
+                                        </button>
+                                        <button onclick="selectBudget('phone',this)" 
+                                                class="contact-option bg-white p-4 rounded-xl text-center hover:shadow-lg">
+                                            <span class="text-2xl">📱</span>
+                                            <span class="block text-gray-700 font-medium mt-2">Phone</span>
+                                        </button>
+                                        <button onclick="selectBudget('live-chat',this)" 
+                                                class="contact-option bg-white p-4 rounded-xl text-center hover:shadow-lg">
+                                            <span class="text-2xl">💬</span>
+                                            <span class="block text-gray-700 font-medium mt-2">Live Chat</span>
+                                        </button>
+                                        <button onclick="selectBudget('video-call',this)" 
+                                                class="contact-option bg-white p-4 rounded-xl text-center hover:shadow-lg">
+                                            <span class="text-2xl">🎥</span>
+                                            <span class="block text-gray-700 font-medium mt-2">Video Call</span>
+                                        </button>
+                                        <button onclick="selectBudget('in-person',this)" 
+                                                class="contact-option bg-white p-4 rounded-xl text-center col-span-2 hover:shadow-lg">
+                                            <span class="text-2xl">🏢</span>
+                                            <span class="block text-gray-700 font-medium mt-2">In-Person</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="flex justify-between">
+                                        <button onclick="prevStep(2)" 
+                                                class="py-3 px-6 text-white border border-white/20 rounded-lg hover:bg-white/10 
+                                                    transition duration-200">
+                                            Back
+                                        </button>
+                                        <button onclick="nextStep(4)" 
+                                                class="py-3 px-6 text-white bg-white/20 rounded-lg hover:bg-white/30 
+                                                    transition duration-200 font-medium">
+                                            Continue
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 (unchanged) -->
+                        <div class="step hidden" id="step4">
+                            <div class="bg-primary rounded-lg p-8 shadow-lg">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h1 class="text-3xl font-bold text-white">Additional Details</h1>
+                                    <span class="text-white/80 text-sm px-3 py-1 bg-white/10 rounded-full">Step 4 of 4</span>
+                                </div>
+
+                                <div class="space-y-6">
+                                    <p class="text-white text-lg">Anything else you'd like us to know? ✨</p>
+                                    <textarea id="additionalInfo" rows="4" 
+                                            class="w-full p-4 rounded-xl bg-white resize-none focus:ring-2 focus:ring-white/20 
+                                                    focus:outline-none"
+                                            placeholder="Tell us more about your question..."></textarea>
+
+                                    <div class="flex justify-between">
+                                        <button onclick="prevStep(3)" 
+                                                class="py-3 px-6 text-white border border-white/20 rounded-lg hover:bg-white/10 
+                                                    transition duration-200">
+                                            Back
+                                        </button>
+                                        <button onclick="submitForm()" 
+                                                class="py-3 px-6 text-white bg-white/20 rounded-lg hover:bg-white/30 
+                                                    transition duration-200 font-medium">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Success Message (unchanged) -->
+                        <div class="step hidden" id="success">
+                            <div class="bg-primary rounded-lg p-8 shadow-lg text-center">
+                                <div class="space-y-6">
+                                    <div class="flex justify-center items-center gap-4">
+                                        <div class="bg-white/10 p-4 rounded-full">
+                                            <span class="text-4xl">🎉</span>
+                                        </div>
+                                        <div class="text-left">
+                                            <h2 class="text-2xl font-bold text-white">Thank you!</h2>
+                                            <p class="text-white/80">We'll be in touch soon</p>
+                                        </div>
+                                    </div>
+                                    <button onclick="closeForm()" 
+                                            class="w-full py-3 px-6 text-white bg-white/20 rounded-lg hover:bg-white/30 
+                                                transition duration-200 font-medium">
+                                        Return to Dashboard
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let formData = {
+            type: '',
+            budget: '',
+            additionalInfo: ''
+        };
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const sidebarContent = document.getElementById('sidebar-content');
+            const miniIcons = document.getElementById('mini-icons');
+            
+            if (sidebar.classList.contains('w-64')) {
+                sidebar.classList.remove('w-64');
+                sidebar.classList.add('w-16');
+                mainContent.classList.remove('ml-64');
+                mainContent.classList.add('ml-16');
+            } else {
+                sidebar.classList.add('w-64');
+                sidebar.classList.remove('w-16');
+                mainContent.classList.add('ml-64');
+                mainContent.classList.remove('ml-16');
+            }
+            
+            sidebarContent.classList.toggle('hidden');
+            miniIcons.classList.toggle('hidden');
+            
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('w-16'));
+        }
+
+        // Load saved sidebar state
+        document.addEventListener('DOMContentLoaded', () => {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
+                toggleSidebar();
+            }
+        });
+
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(s => {
+                s.classList.add('hidden');
+                s.classList.remove('active');
+            });
+            const currentStepElement = document.getElementById(`step${step}`);
+            currentStepElement.classList.remove('hidden');
+            setTimeout(() => {
+                currentStepElement.classList.add('active');
+            }, 50);
+        }
+
+        function validateStep(step) {
+            if (step === 2 && !formData.type) {
+                alert('Please select a type');
+                return false;
+            }
+            if (step === 3 && !formData.budget) {
+                alert('Please select a budget range');
+                return false;
+            }
+            return true;
+        }
+
+        function nextStep(step) {
+            if (validateStep(currentStep)) {
+                currentStep = step;
+                showStep(step);
+            }
+        }
+
+        function prevStep(step) {
+            currentStep = step;
+            showStep(step);
+        }
+
+        function selectType(type, btnElement) {
+            formData.type = type;
+            document.querySelectorAll('#step2 .inquiry-option').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            btnElement.classList.add('selected');
+        }
+        function selectBudget(budget, btnElement) {
+            formData.budget = budget;
+            // remove 'selected' from all
+            document.querySelectorAll('#step3 .contact-option').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            // highlight the clicked one
+            btnElement.classList.add('selected');
+        }
+
+        async function submitForm() {
+            formData.additionalInfo = document.getElementById('additionalInfo').value;
+            
+            try {
+                const response = await fetch("{{ url_for('user.submit_contact') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    // Hide all steps first
+                    document.querySelectorAll('.step').forEach(s => {
+                        s.classList.add('hidden');
+                        s.classList.remove('active');
+                    });
+                    
+                    // Show success message
+                    const successStep = document.getElementById('success');
+                    successStep.classList.remove('hidden');
+                    setTimeout(() => {
+                        successStep.classList.add('active');
+                    }, 50);
+                } else {
+                    alert(result.error || 'There was an error submitting the form.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('There was an error submitting the form. Please try again.');
+            }
+        }
+
+        function closeForm() {
+            window.location.href = "{{ url_for('user.dashboard') }}";
+        }
+    </script>
+</body>
+</html>

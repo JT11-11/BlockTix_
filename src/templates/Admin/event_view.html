@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockTix - View Event</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar with collapse functionality -->
+        <div id="sidebar" class="w-64 bg-blue-800 text-white h-screen flex flex-col justify-between transition-all duration-300 overflow-hidden">
+            <div>
+                <div class="p-4 flex justify-between items-center">
+                    <h1 class="text-2xl font-bold sidebar-text">BlockTix Admin</h1>
+                    <button id="sidebarCollapseBtn" class="text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                </div>
+                <nav class="mt-8">
+                    <a href="{{ url_for('admin.dashboard') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Users</span>
+                    </a>
+                    <a href="{{ url_for('admin.events') }}" class="flex items-center px-6 py-3 bg-indigo-700 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Events</span>
+                    </a>
+                    <a href="{{ url_for('admin.promotions') }}" class="flex items-center px-6 py-3 text-white hover:bg-indigo-700 group transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                        <span class="sidebar-text whitespace-nowrap">Promotions</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Logout button at the bottom -->
+            <div class="mb-8 px-4">
+                <a href="{{ url_for('admin.logout') }}" class="flex items-center px-6 py-3 text-white bg-red-700 hover:bg-red-800 rounded-lg transition-colors duration-200 justify-center">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span class="sidebar-text whitespace-nowrap">Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top bar with mobile menu button and actions -->
+            <div class="bg-white shadow-sm py-3 px-6 flex justify-between items-center">
+                <button id="mobileMenuBtn" class="block lg:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div class="text-lg font-semibold lg:hidden">View Event</div>
+                
+                <div class="flex space-x-2">
+                    <a href="{{ url_for('admin.edit_event', event_id=event.id) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        Edit Event
+                    </a>
+                    <a href="{{ url_for('admin.events') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Back to Events
+                    </a>
+                </div>
+            </div>
+
+            <!-- Event Details -->
+            <div class="p-8">
+                <div class="mb-6 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">{{ event.event_name }}</h1>
+                        <p class="text-gray-600 mt-1">{{ event.venue }}</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-gray-500">Created: {{ event.created_at.strftime('%Y-%m-%d') }}</span>
+                        <span class="text-sm text-gray-500">|</span>
+                        <span class="text-sm text-gray-500">Last Updated: {{ event.updated_at.strftime('%Y-%m-%d') }}</span>
+                    </div>
+                </div>
+
+                <!-- Event Information Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Ticket Stats -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Ticket Statistics</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Tickets:</span>
+                                <span class="font-semibold">{{ total_tickets }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Sold Tickets:</span>
+                                <span class="font-semibold">{{ sold_tickets }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Used Tickets:</span>
+                                <span class="font-semibold">{{ used_tickets }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Available Tickets:</span>
+                                <span class="font-semibold">{{ event.available_tickets - sold_tickets }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Details -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Event Details</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Date:</span>
+                                <span class="font-semibold">{{ event.event_date.strftime('%B %d, %Y') }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Time:</span>
+                                <span class="font-semibold">{{ event.event_time.strftime('%I:%M %p') }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Ticket Price:</span>
+                                <span class="font-semibold">${{ "%.2f"|format(event.ticket_price) }}</span>
+                            </div>
+                            {% if event.verification_pin %}
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Verification PIN:</span>
+                                <span class="font-semibold">{{ event.verification_pin }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event Description -->
+            <div class="bg-white rounded-lg shadow mb-8">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Event Description</h3>
+                    <div class="prose max-w-none">
+                        {{ event.description|safe }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Eco-Friendly Features -->
+            <div class="bg-white rounded-lg shadow mb-8">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Eco-Friendly Features</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-start {% if event.eco_paper_straws %}text-green-700{% else %}text-gray-400{% endif %}">
+                            <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">Paper Straws</span>
+                                <p class="text-sm text-gray-500">Event uses paper straws instead of plastic ones</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start {% if event.eco_public_transport %}text-green-700{% else %}text-gray-400{% endif %}">
+                            <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">Public Transport</span>
+                                <p class="text-sm text-gray-500">Event is accessible by public transportation</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start {% if event.eco_recycling %}text-green-700{% else %}text-gray-400{% endif %}">
+                            <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">Recycling Available</span>
+                                <p class="text-sm text-gray-500">Event offers recycling facilities</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start {% if event.eco_composting %}text-green-700{% else %}text-gray-400{% endif %}">
+                            <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">Composting Available</span>
+                                <p class="text-sm text-gray-500">Event offers composting facilities</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start {% if event.eco_renewable_energy %}text-green-700{% else %}text-gray-400{% endif %}">
+                            <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">Renewable Energy</span>
+                                <p class="text-sm text-gray-500">Event is powered by renewable energy sources</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if event.image_id %}
+            <!-- Event Image -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Event Image</h3>
+                    <img src="{{ url_for('get_image', uuid=event.image_id) }}" alt="{{ event.event_name }}" class="w-full h-auto rounded-lg">
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sidebar collapse functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebarTexts = document.querySelectorAll('.sidebar-text');
+        
+        // For desktop view - toggle sidebar width
+        sidebarCollapseBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-16');
+            
+            // Toggle visibility of text elements
+            sidebarTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            // Rotate the collapse button when sidebar is collapsed
+            this.querySelector('svg').classList.toggle('rotate-180');
+        });
+        
+        // For mobile view
+        mobileMenuBtn.addEventListener('click', function() {
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+            }
+        });
+        
+        // If mobile, hide sidebar by default
+        function handleResize() {
+            if (window.innerWidth < 1024) { // lg breakpoint
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0', 'w-16');
+                sidebar.classList.add('w-64');
+                sidebarTexts.forEach(text => {
+                    text.classList.remove('hidden');
+                });
+                sidebarCollapseBtn.querySelector('svg').classList.remove('rotate-180');
+            } else {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+            }
+        }
+        
+        // Initial setup
+        handleResize();
+        
+        // Handle window resize
+        window.addEventListener('resize', handleResize);
+    });
+</script>
+</body>
+</html>
